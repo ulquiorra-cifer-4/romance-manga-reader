@@ -1707,6 +1707,16 @@ input, textarea, select {
   to { transform: translateX(0); }
 }
 
+/* Spin animation for loading indicators */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
 .drawer-header {
   padding: 1.25rem;
   display: flex;

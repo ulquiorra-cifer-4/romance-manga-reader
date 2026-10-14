@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Heart, Search, BookOpen, Settings, Moon, Compass, Bookmark, X, Sparkles } from "lucide-react";
+import { Heart, Search, BookOpen, Settings, Moon, Compass, Bookmark, X, Sparkles, Loader } from "lucide-react";
 import { useRomance } from "../context/RomanceContext";
 import { ROMANCE_DATABASE } from "../data/romanceMangaDatabase";
+import { searchMangaDex } from "../services/mangadexApi";
+import { REGISTER_DYNAMIC_MANGA } from "../data/romanceMangaDatabase";
 
 export default function Header() {
   const {
@@ -15,7 +17,10 @@ export default function Header() {
 
   const [searchVal, setSearchVal] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [liveResults, setLiveResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef(null);
+  const debounceRef = useRef(null);
 
   // Close search dropdown when clicking outside
   useEffect(() => {
@@ -28,14 +33,50 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const searchResults = searchVal.trim()
+  // Local database search (instant)
+  const localResults = searchVal.trim()
     ? ROMANCE_DATABASE.filter((m) =>
         m.title.toLowerCase().includes(searchVal.toLowerCase()) ||
         m.romajiTitle?.toLowerCase().includes(searchVal.toLowerCase()) ||
-        m.storyAndArt.toLowerCase().includes(searchVal.toLowerCase()) ||
-        m.tags.some((t) => t.toLowerCase().includes(searchVal.toLowerCase()))
+        m.storyAndArt?.toLowerCase().includes(searchVal.toLowerCase()) ||
+        m.tags?.some((t) => t.toLowerCase().includes(searchVal.toLowerCase()))
       )
     : [];
+
+  // Live MangaDex search (debounced)
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (!searchVal.trim() || searchVal.trim().length < 2) {
+      setLiveResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    debounceRef.current = setTimeout(() => {
+      searchMangaDex(searchVal.trim(), 8)
+        .then((results) => {
+          // Filter out any results already in local database
+          const localIds = new Set(ROMANCE_DATABASE.map(m => m.mangadexId));
+          const newResults = results.filter(r => !localIds.has(r.mangadexId));
+          // Register these in dynamic registry so they can be navigated to
+          newResults.forEach(r => REGISTER_DYNAMIC_MANGA(r));
+          setLiveResults(newResults);
+          setIsSearching(false);
+        })
+        .catch(() => {
+          setIsSearching(false);
+        });
+    }, 400);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchVal]);
+
+  // Merge local + live results
+  const allResults = [...localResults, ...liveResults];
 
   const libraryCount = Object.keys(library).length;
 
@@ -101,6 +142,7 @@ export default function Header() {
               onClick={() => {
                 setSearchVal("");
                 setIsDropdownOpen(false);
+                setLiveResults([]);
               }}
               style={{ color: "#94a3b8" }}
             >
@@ -115,31 +157,75 @@ export default function Header() {
         {/* Search Results Dropdown */}
         {isDropdownOpen && searchVal.trim() && (
           <div className="search-dropdown">
-            {searchResults.length > 0 ? (
-              searchResults.map((manga) => (
-                <div
-                  key={manga.id}
-                  className="search-result-item"
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                    setSearchVal("");
-                    navigateTo("manga", { mangaId: manga.id });
-                  }}
-                >
-                  <img src={manga.cover} alt={manga.title} className="search-result-thumb" />
-                  <div className="search-result-info">
-                    <div className="search-result-title">{manga.title}</div>
-                    <div className="search-result-meta">
-                      <span>★ {manga.rating}</span>
-                      <span>•</span>
-                      <span>Ch. {manga.latestChapter}</span>
-                      <span>•</span>
-                      <span>{manga.status}</span>
-                    </div>
+            {/* Local curated results */}
+            {localResults.length > 0 && (
+              <div style={{ padding: "0.4rem 0.8rem 0.2rem", fontSize: "0.7rem", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Curated Collection
+              </div>
+            )}
+            {localResults.map((manga) => (
+              <div
+                key={manga.id}
+                className="search-result-item"
+                onClick={() => {
+                  setIsDropdownOpen(false);
+                  setSearchVal("");
+                  navigateTo("manga", { mangaId: manga.id });
+                }}
+              >
+                <img src={manga.cover} alt={manga.title} className="search-result-thumb" />
+                <div className="search-result-info">
+                  <div className="search-result-title">{manga.title}</div>
+                  <div className="search-result-meta">
+                    <span>★ {manga.rating}</span>
+                    <span>•</span>
+                    <span>Ch. {manga.latestChapter}</span>
+                    <span>•</span>
+                    <span>{manga.status}</span>
                   </div>
                 </div>
-              ))
-            ) : (
+              </div>
+            ))}
+
+            {/* Live MangaDex results */}
+            {(isSearching || liveResults.length > 0) && (
+              <div style={{ padding: "0.4rem 0.8rem 0.2rem", fontSize: "0.7rem", color: "#22d3ee", textTransform: "uppercase", letterSpacing: "0.05em", borderTop: localResults.length > 0 ? "1px solid #28313e" : "none", marginTop: localResults.length > 0 ? "0.3rem" : 0 }}>
+                {isSearching ? (
+                  <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <Loader size={11} className="spin" />
+                    Searching MangaDex...
+                  </span>
+                ) : (
+                  "From MangaDex"
+                )}
+              </div>
+            )}
+            {liveResults.map((manga) => (
+              <div
+                key={manga.id}
+                className="search-result-item"
+                onClick={() => {
+                  setIsDropdownOpen(false);
+                  setSearchVal("");
+                  navigateTo("manga", { mangaId: manga.id });
+                }}
+              >
+                <img src={manga.cover} alt={manga.title} className="search-result-thumb" />
+                <div className="search-result-info">
+                  <div className="search-result-title">{manga.title}</div>
+                  <div className="search-result-meta">
+                    <span>★ {manga.rating}</span>
+                    <span>•</span>
+                    <span>{manga.year}</span>
+                    <span>•</span>
+                    <span style={{ color: "#22d3ee" }}>MangaDex</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* No results at all */}
+            {allResults.length === 0 && !isSearching && (
               <div style={{ padding: "1.2rem", textAlign: "center", color: "#94a3b8" }}>
                 No romance series found for "{searchVal}". Click "Browse" for more.
               </div>
