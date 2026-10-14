@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Star,
   BookOpen,
@@ -15,10 +15,12 @@ import {
   ExternalLink,
   Users,
   Eye,
-  CheckCircle2
+  CheckCircle2,
+  Loader
 } from "lucide-react";
 import { useRomance } from "../context/RomanceContext";
-import { ROMANCE_DATABASE } from "../data/romanceMangaDatabase";
+import { ROMANCE_DATABASE, GET_MANGA_BY_ID } from "../data/romanceMangaDatabase";
+import { fetchChapters, fetchMangaCover } from "../services/mangadexApi";
 
 export default function MangaDetailPage({ mangaId }) {
   const {
@@ -29,7 +31,7 @@ export default function MangaDetailPage({ mangaId }) {
     toggleFavorite
   } = useRomance();
 
-  const manga = ROMANCE_DATABASE.find((m) => m.id === mangaId) || ROMANCE_DATABASE[0];
+  const manga = GET_MANGA_BY_ID(mangaId) || ROMANCE_DATABASE[0];
 
   const [isSynopsisExpanded, setIsSynopsisExpanded] = useState(false);
   const [userRating, setUserRating] = useState(5);
@@ -41,17 +43,54 @@ export default function MangaDetailPage({ mangaId }) {
   const [showFollowDropdown, setShowFollowDropdown] = useState(false);
   const [copyShareSuccess, setCopyShareSuccess] = useState(false);
 
+  // LIVE chapter loading from MangaDex
+  const [liveChapters, setLiveChapters] = useState([]);
+  const [isLoadingChapters, setIsLoadingChapters] = useState(false);
+  const [chapterError, setChapterError] = useState(null);
+  // LIVE cover loading
+  const [liveCover, setLiveCover] = useState(manga.cover);
+
+  // Fetch chapters from MangaDex on mount
+  useEffect(() => {
+    const mangadexId = manga.mangadexId;
+    if (!mangadexId) return;
+
+    setIsLoadingChapters(true);
+    setChapterError(null);
+
+    fetchChapters(mangadexId)
+      .then((chapters) => {
+        setLiveChapters(chapters);
+        setIsLoadingChapters(false);
+      })
+      .catch((err) => {
+        console.warn("Failed to load chapters:", err);
+        setChapterError("Could not load chapters from MangaDex. Please try again.");
+        setIsLoadingChapters(false);
+      });
+
+    // Also fetch cover if not already set
+    if (!manga.cover) {
+      fetchMangaCover(mangadexId).then((url) => {
+        if (url) setLiveCover(url);
+      });
+    }
+  }, [manga.mangadexId, manga.cover]);
+
   const isFav = favorites.includes(manga.id);
   const currentLibraryStatus = library[manga.id]?.status || null;
 
+  // Use live chapters (from API) or fall back to database chapters
+  const activeChapters = liveChapters.length > 0 ? liveChapters : (manga.chapters || []);
+
   // Extract scanlation groups
-  const allGroups = ["All groups", ...new Set(manga.chapters?.map((c) => c.group) || [])];
+  const allGroups = ["All groups", ...new Set(activeChapters.map((c) => c.group).filter(Boolean))];
 
   // Filter & sort chapters
-  const filteredChapters = (manga.chapters || [])
+  const filteredChapters = activeChapters
     .filter((ch) => {
       const matchSearch =
-        ch.chapter.toLowerCase().includes(chapterSearch.toLowerCase()) ||
+        ch.chapter?.toLowerCase().includes(chapterSearch.toLowerCase()) ||
         ch.title?.toLowerCase().includes(chapterSearch.toLowerCase());
       const matchGroup = selectedGroup === "All groups" || ch.group === selectedGroup;
       return matchSearch && matchGroup;
@@ -84,6 +123,8 @@ export default function MangaDetailPage({ mangaId }) {
     { key: "dropped", label: "Dropped" }
   ];
 
+  const coverUrl = liveCover || manga.cover;
+
   return (
     <div className="detail-page">
       {/* Breadcrumbs matching Screenshot 5 */}
@@ -103,7 +144,7 @@ export default function MangaDetailPage({ mangaId }) {
       <div className="detail-layout">
         {/* LEFT COLUMN: Cover, Star Rating, Share */}
         <div className="detail-left-col">
-          <img src={manga.cover} alt={manga.title} className="detail-cover" />
+          <img src={coverUrl} alt={manga.title} className="detail-cover" />
 
           {/* Star Rating Widget */}
           <div
@@ -184,7 +225,9 @@ export default function MangaDetailPage({ mangaId }) {
             <button
               className="btn-primary"
               onClick={() => {
-                const targetCh = manga.chapters?.[0]?.id || `${manga.id}-1`;
+                const targetCh = activeChapters.length > 0
+                  ? activeChapters[activeChapters.length - 1]?.id  // First chapter (sorted desc, so last = earliest)
+                  : `${manga.id}-1`;
                 navigateTo("reader", { mangaId: manga.id, chapterId: targetCh });
               }}
             >
@@ -271,7 +314,7 @@ export default function MangaDetailPage({ mangaId }) {
             <p>
               {isSynopsisExpanded
                 ? manga.synopsis
-                : `${manga.synopsis.slice(0, 240)}...`}
+                : `${(manga.synopsis || "").slice(0, 240)}...`}
               <button
                 className="view-more-btn"
                 onClick={() => setIsSynopsisExpanded(!isSynopsisExpanded)}
@@ -288,7 +331,7 @@ export default function MangaDetailPage({ mangaId }) {
           <div>
             <div className="meta-group-title">GENRES</div>
             <div className="meta-tags-list">
-              {manga.genres.map((g) => (
+              {(manga.genres || []).map((g) => (
                 <span
                   key={g}
                   className="meta-pill"
@@ -304,7 +347,7 @@ export default function MangaDetailPage({ mangaId }) {
           <div>
             <div className="meta-group-title">TAGS & TROPES</div>
             <div className="meta-tags-list">
-              {manga.tags.map((t) => (
+              {(manga.tags || []).map((t) => (
                 <span
                   key={t}
                   className="meta-pill"
@@ -363,7 +406,27 @@ export default function MangaDetailPage({ mangaId }) {
 
       {/* CHAPTERS SECTION matching Screenshot 4 */}
       <section className="chapters-container">
-        <h2 className="chapters-header">Chapters</h2>
+        <h2 className="chapters-header">
+          Chapters
+          {isLoadingChapters && (
+            <span style={{ marginLeft: 12, fontSize: "0.85rem", color: "#22d3ee", fontWeight: 400 }}>
+              <Loader size={14} className="spin" style={{ display: "inline", verticalAlign: "middle", marginRight: 6 }} />
+              Loading from MangaDex...
+            </span>
+          )}
+          {!isLoadingChapters && activeChapters.length > 0 && (
+            <span style={{ marginLeft: 12, fontSize: "0.85rem", color: "#94a3b8", fontWeight: 400 }}>
+              ({activeChapters.length} chapters available)
+            </span>
+          )}
+        </h2>
+
+        {/* Error message */}
+        {chapterError && (
+          <div style={{ padding: "1rem", background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: 8, color: "#ef4444", marginBottom: "1rem" }}>
+            {chapterError}
+          </div>
+        )}
 
         {/* Toolbar matching Screenshot 4 */}
         <div className="chapters-toolbar">
@@ -428,7 +491,13 @@ export default function MangaDetailPage({ mangaId }) {
 
         {/* Chapters List matching Screenshot 4 */}
         <div className="chapters-list">
-          {filteredChapters.length > 0 ? (
+          {isLoadingChapters ? (
+            <div style={{ padding: "3rem", textAlign: "center", color: "#94a3b8" }}>
+              <Loader size={24} className="spin" style={{ margin: "0 auto 1rem", display: "block" }} />
+              <p>Fetching chapters from MangaDex...</p>
+              <p style={{ fontSize: "0.8rem", marginTop: 4, color: "#64748b" }}>This may take a moment for manga with many chapters.</p>
+            </div>
+          ) : filteredChapters.length > 0 ? (
             filteredChapters.map((ch) => (
               <div
                 key={ch.id}
@@ -439,6 +508,11 @@ export default function MangaDetailPage({ mangaId }) {
                   <span className="chapter-num">Ch.{ch.chapter}</span>
                   {ch.title && (
                     <span className="chapter-title-text">{ch.title}</span>
+                  )}
+                  {ch.lang && ch.lang !== "en" && (
+                    <span style={{ fontSize: "0.7rem", color: "#f59e0b", marginLeft: 6, textTransform: "uppercase" }}>
+                      [{ch.lang}]
+                    </span>
                   )}
                 </div>
 
@@ -472,7 +546,9 @@ export default function MangaDetailPage({ mangaId }) {
             ))
           ) : (
             <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
-              No chapters found matching "{chapterSearch}".
+              {chapterSearch
+                ? `No chapters found matching "${chapterSearch}".`
+                : "No readable chapters available on MangaDex for this title."}
             </div>
           )}
         </div>

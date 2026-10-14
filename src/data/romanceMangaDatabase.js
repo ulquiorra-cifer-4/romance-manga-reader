@@ -1,5 +1,6 @@
 // Comprehensive Romance Manga Masterpiece Database
-// Curated exclusively for romance lovers with rich metadata, tropes, chapters, and reader pages.
+// Curated exclusively for romance lovers with rich metadata.
+// All covers and chapters are loaded LIVE from MangaDex API.
 
 export const ROMANCE_GENRES = [
   "All Romance",
@@ -34,29 +35,16 @@ export const ROMANCE_TROPES = [
   "Workplace Romance"
 ];
 
-// Helper to generate realistic high quality manga panels
-export const createChapterPages = (mangaId, chapterNum, title, pageCount = 18) => {
-  return Array.from({ length: pageCount }, (_, i) => {
-    const pageNum = i + 1;
-    // We provide reliable, high quality manga panel art sources with fallback generators
-    return {
-      page: pageNum,
-      url: `https://picsum.photos/seed/${mangaId}-ch${chapterNum}-p${pageNum}/1000/1450`,
-      chapterNum,
-      title
-    };
-  });
-};
-
 export const ROMANCE_DATABASE = [
   {
     id: "blue-box",
+    mangadexId: "ed5dddc0-999d-4fd2-a702-9fef1ec2c955",
     title: "Blue Box",
     romajiTitle: "Ao no Hako",
-    kanjiTitle: "アオのハコ / Ao no Hako / 蓝箱 / Kahong Bughaw",
+    kanjiTitle: "アオのハコ / Ao no Hako",
     storyAndArt: "Miura Kouji",
-    cover: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1600&q=80",
+    cover: "https://uploads.mangadex.org/covers/ed5dddc0-999d-4fd2-a702-9fef1ec2c955/584fde4c-a60b-433d-a0b5-8d113f8b75a9.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/ed5dddc0-999d-4fd2-a702-9fef1ec2c955/584fde4c-a60b-433d-a0b5-8d113f8b75a9.jpg",
     year: 2021,
     status: "ONGOING",
     type: "MANGA",
@@ -72,12 +60,8 @@ export const ROMANCE_DATABASE = [
     genres: ["Comedy", "Drama", "Romance", "Slice of Life", "Sports"],
     tags: [
       "Adapted to Anime",
-      "Japan",
       "Male Lead Falls in Love First",
       "High School",
-      "High School Student/s",
-      "Love Confession/s",
-      "Love Triangle/s",
       "Sports & Romance",
       "Co-living",
       "Badminton & Basketball"
@@ -85,97 +69,23 @@ export const ROMANCE_DATABASE = [
     trackers: {
       anilist: "https://anilist.co/manga/132182/Ao-no-Hako/",
       mal: "https://myanimelist.net/manga/135545/Ao_no_Hako",
-      mangaupdates: "https://www.mangaupdates.com/series.html?id=180126",
-      mangadex: "https://mangadex.org/title/86da5e10-633b-4ec6-897b-93ecc351b68b",
-      mangabtt: "https://mangadex.org"
+      mangadex: "https://mangadex.org/title/ed5dddc0-999d-4fd2-a702-9fef1ec2c955"
     },
-    synopsis: "Taiki Inomata is a student enthusiastic about sports and aspires to arrive first at his school's blue-box gymnasium every day. Unfortunately, his morning smile quickly turns into a frown as he loses again and again to the girl's basketball team star: Chinatsu Kano. Despite this, Taiki secretly likes his senior, and just when their relationship feels impossibly distant, Chinatsu's parents move abroad, leading her to move into Taiki's family home. Now living under the same roof, Taiki strives to match her athletic dedication and close the distance between their hearts.",
+    synopsis: "Taiki Inomata is on the boys' badminton team at sports powerhouse Eimei Junior and Senior High. He is in love with fellow student and basketball player Chinatsu Kano, the older girl he trains alongside every morning in the gym. One day, Chinatsu's parents move abroad, and she ends up living at Taiki's house! As they live together, Taiki works hard to become a worthy partner both on the court and in love.",
     highlights: "The quintessential modern sports romance masterpiece with gentle realism and breathtaking romantic tension.",
     featured: true,
     latestChapter: 250,
-    chapters: [
-      {
-        id: "bb-250",
-        chapter: "250",
-        volume: "28",
-        title: "In This Box",
-        group: "MangaPlus",
-        verified: true,
-        likes: 160,
-        timeAgo: "3mos ago",
-        date: "2026-07-12",
-        pages: createChapterPages("blue-box", 250, "In This Box", 21)
-      },
-      {
-        id: "bb-249",
-        chapter: "249",
-        volume: "28",
-        title: "We See Each Other Every Morning",
-        group: "VIZ Media",
-        verified: true,
-        likes: 139,
-        timeAgo: "3mos ago",
-        date: "2026-07-05",
-        pages: createChapterPages("blue-box", 249, "We See Each Other Every Morning", 19)
-      },
-      {
-        id: "bb-248",
-        chapter: "248",
-        volume: "27",
-        title: "No Matter How Much Our Worlds Expand",
-        group: "MangaPlus",
-        verified: true,
-        likes: 122,
-        timeAgo: "3mos ago",
-        date: "2026-06-28",
-        pages: createChapterPages("blue-box", 248, "No Matter How Much Our Worlds Expand", 20)
-      },
-      {
-        id: "bb-247",
-        chapter: "247",
-        volume: "27",
-        title: "Let's Eat Together",
-        group: "VIZ Media",
-        verified: true,
-        likes: 110,
-        timeAgo: "3mos ago",
-        date: "2026-06-21",
-        pages: createChapterPages("blue-box", 247, "Let's Eat Together", 18)
-      },
-      {
-        id: "bb-176",
-        chapter: "176",
-        volume: "20",
-        title: "I Want to Be in a Relationship",
-        group: "MangaPlus",
-        verified: true,
-        likes: 245,
-        timeAgo: "1yr ago",
-        date: "2025-05-18",
-        pages: createChapterPages("blue-box", 176, "I Want to Be in a Relationship", 20)
-      },
-      {
-        id: "bb-1",
-        chapter: "1",
-        volume: "1",
-        title: "Chinatsu-senpai",
-        group: "VIZ Media",
-        verified: true,
-        likes: 540,
-        timeAgo: "3yrs ago",
-        date: "2021-04-12",
-        pages: createChapterPages("blue-box", 1, "Chinatsu-senpai", 54)
-      }
-    ]
+    chapters: []
   },
   {
     id: "fragrant-flower",
+    mangadexId: "418791c0-35cf-4f87-936b-acd9cddf0989",
     title: "The Fragrant Flower Blooms with Dignity",
     romajiTitle: "Kaoru Hana wa Rin to Saku",
-    kanjiTitle: "薫る花は凛と咲く / The Fragrant Flower Blooms with Dignity",
+    kanjiTitle: "薫る花は凛と咲く",
     storyAndArt: "Saka Mikami",
-    cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
+    cover: "https://uploads.mangadex.org/covers/418791c0-35cf-4f87-936b-acd9cddf0989/6e823d0e-103a-4cf9-a312-a3a292ccb12d.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/418791c0-35cf-4f87-936b-acd9cddf0989/6e823d0e-103a-4cf9-a312-a3a292ccb12d.jpg",
     year: 2021,
     status: "ONGOING",
     type: "MANGA",
@@ -183,653 +93,395 @@ export const ROMANCE_DATABASE = [
     lang: "JA",
     rank: 120,
     rating: 9.7,
-    ratingVotes: 2410,
-    score: 9.28,
-    followed: 38200,
-    views: "3.2M",
+    ratingVotes: 1540,
+    score: 9.24,
+    followed: 32100,
+    views: "2.1M",
     demographics: "Shounen",
-    genres: ["Romance", "Drama", "Slice of Life", "School Life"],
+    genres: ["Comedy", "Drama", "Romance", "Slice of Life"],
     tags: [
-      "Wholesome",
       "Opposites Attract",
-      "Delinquent & Pure Maiden",
-      "Healthy Communication",
-      "Found Family",
-      "Bakery Romance",
       "High School",
-      "No Toxic Drama"
+      "Wholesome",
+      "Delinquent & Good Girl",
+      "Mutual Respect",
+      "Bakery Romance"
     ],
     trackers: {
       anilist: "https://anilist.co/manga/140475/Kaoru-Hana-wa-Rin-to-Saku/",
       mal: "https://myanimelist.net/manga/144267/Kaoru_Hana_wa_Rin_to_Saku",
-      mangaupdates: "https://www.mangaupdates.com/series/35y806d",
-      mangadex: "https://mangadex.org/title/418791c0-35cf-4f58-814f-3d9a723e02a1",
-      mangabtt: "https://mangadex.org"
+      mangadex: "https://mangadex.org/title/418791c0-35cf-4f87-936b-acd9cddf0989"
     },
-    synopsis: "In a certain place, there are two neighboring high schools: Chidori Public High School, a bottom-feeder school where all the rough boys gather, and Kikyo Girls' High School, a prestigious elite academy for wealthy young ladies. Rintaro Tsumugi, a tall and fierce-looking Chidori student with a gentle heart, meets Kaoruko Wakuri while helping out at his family's pastry shop. Kaoruko treats him without any fear or prejudice, and as their bond deepens, they must navigate the deep-seated rivalry between their schools.",
-    highlights: "Universally celebrated as one of the sweetest, healthiest, and most emotionally mature modern romances ever written.",
+    synopsis: "In a certain place, there are two neighboring high schools: Chidori High, a bottom-feeder boys' school where delinquents gather, and Kikyo Girls' School, a prestigious elite school. Rintaro Tsumugi, a tough-looking student at Chidori, meets Kaoruko Waguri while helping out at his family's bakery. Despite initial stereotypes, an earnest, deeply respectful romance blossoms between them.",
+    highlights: "Widely regarded as the pinnacle of modern wholesome romance, free of frustrating misunderstandings.",
     featured: true,
-    latestChapter: 135,
-    chapters: [
-      {
-        id: "fh-135",
-        chapter: "135",
-        volume: "15",
-        title: "A Future Alongside You",
-        group: "K-Scans",
-        verified: true,
-        likes: 310,
-        timeAgo: "2wks ago",
-        date: "2026-09-28",
-        pages: createChapterPages("fragrant-flower", 135, "A Future Alongside You", 20)
-      },
-      {
-        id: "fh-134",
-        chapter: "134",
-        volume: "15",
-        title: "Smiles at the Cake Shop",
-        group: "K-Scans",
-        verified: true,
-        likes: 290,
-        timeAgo: "3wks ago",
-        date: "2026-09-21",
-        pages: createChapterPages("fragrant-flower", 134, "Smiles at the Cake Shop", 19)
-      },
-      {
-        id: "fh-1",
-        chapter: "1",
-        volume: "1",
-        title: "Chidori and Kikyo",
-        group: "Kodansha",
-        verified: true,
-        likes: 980,
-        timeAgo: "3yrs ago",
-        date: "2021-10-20",
-        pages: createChapterPages("fragrant-flower", 1, "Chidori and Kikyo", 48)
-      }
-    ]
+    latestChapter: 145,
+    chapters: []
   },
   {
     id: "kaguya-sama",
+    mangadexId: "37f5cce0-8070-4ada-96e5-fa24b1bd4ff9",
     title: "Kaguya-sama: Love Is War",
-    romajiTitle: "Kaguya-sama wa Kokurasetai: Tensai-tachi no Ren'ai Zunousen",
-    kanjiTitle: "かぐや様は告らせたい / Kaguya Wants to be Confessed to",
+    romajiTitle: "Kaguya-sama wa Kokurasetai",
+    kanjiTitle: "かぐや様は告らせたい ～天才たちの恋愛頭脳戦～",
     storyAndArt: "Akasaka Aka",
-    cover: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80",
+    cover: "https://uploads.mangadex.org/covers/37f5cce0-8070-4ada-96e5-fa24b1bd4ff9/e21ca520-5054-4041-a07e-de8b7c683522.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/37f5cce0-8070-4ada-96e5-fa24b1bd4ff9/e21ca520-5054-4041-a07e-de8b7c683522.jpg",
     year: 2015,
-    status: "FINISHED",
+    status: "COMPLETED",
     type: "MANGA",
     contentRating: "SAFE",
     lang: "JA",
-    rank: 15,
+    rank: 18,
     rating: 9.8,
-    ratingVotes: 14200,
+    ratingVotes: 4210,
     score: 9.38,
-    followed: 98400,
-    views: "12.8M",
+    followed: 68900,
+    views: "5.8M",
     demographics: "Seinen",
-    genres: ["Comedy", "Romance", "Psychological", "School Life"],
+    genres: ["Comedy", "Psychological", "Romance", "Slice of Life"],
     tags: [
       "Adapted to Anime",
-      "Mind Games",
+      "Love Confession",
+      "High School",
       "Student Council",
-      "Pride & Romance",
-      "Genius Leads",
-      "Peak Comedy",
-      "Love Confession War",
-      "Rich Girl x Hardworking Boy"
+      "Mind Games",
+      "Genius Duo"
     ],
     trackers: {
-      anilist: "https://anilist.co/manga/86635/Kaguya-sama-wa-Kokurasetai-Tensaitachi-no-Renai-Zunousen/",
-      mal: "https://myanimelist.net/manga/90125/Kaguya-sama_wa_Kokurasetai__Tensai-tachi_no_Renai_Zunousen",
-      mangaupdates: "https://www.mangaupdates.com/series/0u20z22",
-      mangadex: "https://mangadex.org/title/37f5c445-653b-417b-af2e-61b925d1de32",
-      mangabtt: "https://mangadex.org"
+      anilist: "https://anilist.co/manga/86635/Kaguya-sama-wa-Kokurasetai-Tensai-tachi-no-Renai-Zunousen/",
+      mal: "https://myanimelist.net/manga/90125/Kaguya-sama_wa_Kokurasetai_Tensai-tachi_no_Renai_Zunousen",
+      mangadex: "https://mangadex.org/title/37f5cce0-8070-4ada-96e5-fa24b1bd4ff9"
     },
-    synopsis: "All's fair in love and war! At the renowned Shuchiin Academy, Miyuki Shirogane and Kaguya Shinomiya are the top representatives of the student body. Regarded as the national elite, both are secretly head-over-heels in love with each other. However, due to boundless pride, neither is willing to admit it first, believing that whoever confesses becomes the subservient partner! Thus begins a hilarious psychological warfare where each tries to force the other to confess first.",
-    highlights: "The crowning peak of romantic comedies with razor-sharp wit and emotional sincerity.",
+    synopsis: "At the renowned Shuchiin Academy, Miyuki Shirogane and Kaguya Shinomiya are the student body's top representatives. Though they have developed deep feelings for each other, their stubborn pride prevents either from confessing first. Thus begins a legendary battle of wits to make the other confess!",
+    highlights: "The ultimate psychological romantic comedy masterpiece that redefined the genre with humor and heartfelt emotion.",
     featured: true,
     latestChapter: 281,
-    chapters: [
-      {
-        id: "kg-281",
-        chapter: "281",
-        volume: "28",
-        title: "Farewell, Shuchiin Academy",
-        group: "Zaibatsu Scans",
-        verified: true,
-        likes: 1250,
-        timeAgo: "2yrs ago",
-        date: "2022-11-02",
-        pages: createChapterPages("kaguya-sama", 281, "Farewell, Shuchiin Academy", 22)
-      },
-      {
-        id: "kg-220",
-        chapter: "220",
-        volume: "22",
-        title: "The ABCs of Men and Women",
-        group: "Zaibatsu Scans",
-        verified: true,
-        likes: 3100,
-        timeAgo: "3yrs ago",
-        date: "2021-04-15",
-        pages: createChapterPages("kaguya-sama", 220, "The ABCs of Men and Women", 20)
-      },
-      {
-        id: "kg-1",
-        chapter: "1",
-        volume: "1",
-        title: "I Would Make You Confess",
-        group: "VIZ Media",
-        verified: true,
-        likes: 850,
-        timeAgo: "9yrs ago",
-        date: "2015-05-19",
-        pages: createChapterPages("kaguya-sama", 1, "I Would Make You Confess", 26)
-      }
-    ]
+    chapters: []
   },
   {
     id: "horimiya",
+    mangadexId: "a25e46ec-30f7-4db6-89df-cacbc1d9a900",
     title: "Horimiya",
     romajiTitle: "Hori-san to Miyamura-kun",
-    kanjiTitle: "ホリミヤ / Horimiya",
+    kanjiTitle: "ホリミヤ",
     storyAndArt: "HERO, Hagiwara Daisuke",
-    cover: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80",
+    cover: "https://uploads.mangadex.org/covers/a25e46ec-30f7-4db6-89df-cacbc1d9a900/04feed00-d919-4c72-b355-15b37555eb1e.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/a25e46ec-30f7-4db6-89df-cacbc1d9a900/04feed00-d919-4c72-b355-15b37555eb1e.jpg",
     year: 2011,
-    status: "FINISHED",
+    status: "COMPLETED",
     type: "MANGA",
     contentRating: "SAFE",
     lang: "JA",
     rank: 42,
     rating: 9.6,
-    ratingVotes: 8700,
+    ratingVotes: 3890,
     score: 9.15,
-    followed: 62500,
-    views: "9.5M",
+    followed: 54100,
+    views: "4.2M",
     demographics: "Shounen",
-    genres: ["Comedy", "Romance", "School Life", "Slice of Life"],
+    genres: ["Comedy", "Romance", "School", "Slice of Life"],
     tags: [
       "Adapted to Anime",
-      "Secret Persona",
-      "Tattoos & Piercings",
-      "Family Warmth",
-      "High School Romance",
+      "Opposites Attract",
+      "Secret Relationship",
       "Wholesome",
-      "Friend Group"
+      "High School",
+      "Piercings & Tattoos"
     ],
     trackers: {
-      anilist: "https://anilist.co/manga/44775/Horimiya/",
-      mal: "https://myanimelist.net/manga/42775/Horimiya",
-      mangaupdates: "https://www.mangaupdates.com/series/4tfe0cf",
-      mangadex: "https://mangadex.org/title/a25e46ec-3005-45eb-8930-57d2131f4227",
-      mangabtt: "https://mangadex.org"
+      anilist: "https://anilist.co/manga/44785/Horimiya/",
+      mal: "https://myanimelist.net/manga/26785/Horimiya",
+      mangadex: "https://mangadex.org/title/a25e46ec-30f7-4db6-89df-cacbc1d9a900"
     },
-    synopsis: "Kyouko Hori is the popular, smart high school girl who secretly spends her evenings caring for her younger brother and doing housework. Izumi Miyamura is the quiet, brooding glasses-wearing loner who outside school is actually a stylish, pierced, and tattooed sweetheart. When a chance encounter outside school reveals each other's hidden sides, a sweet friendship and deep romance blossoms.",
-    highlights: "The quintessential modern youth romance that captures the warmth of shared secrets and found comfort.",
+    synopsis: "Kyouko Hori is admired at school for her beauty and academics, but at home, she looks after her younger brother and manages housework. Izumi Miyamura seems like a quiet, brooding otaku at school, but outside, he sports tattoos and piercings. When they unexpectedly discover each other's secret identities, an intimate, natural friendship quickly grows into heartwarming love.",
+    highlights: "The quintessential modern school-life romance showcasing natural chemistry, genuine intimacy, and found family.",
     featured: true,
-    latestChapter: 122,
-    chapters: [
-      {
-        id: "hm-122",
-        chapter: "122",
-        volume: "16",
-        title: "Graduation and Beyond",
-        group: "Yen Press",
-        verified: true,
-        likes: 980,
-        timeAgo: "3yrs ago",
-        date: "2021-03-18",
-        pages: createChapterPages("horimiya", 122, "Graduation and Beyond", 24)
-      },
-      {
-        id: "hm-37",
-        chapter: "37",
-        volume: "6",
-        title: "Cold Rain and Warm Words",
-        group: "TSP",
-        verified: true,
-        likes: 1450,
-        timeAgo: "6yrs ago",
-        date: "2018-09-12",
-        pages: createChapterPages("horimiya", 37, "Cold Rain and Warm Words", 20)
-      },
-      {
-        id: "hm-1",
-        chapter: "1",
-        volume: "1",
-        title: "A Page of Spring",
-        group: "Yen Press",
-        verified: true,
-        likes: 1200,
-        timeAgo: "10yrs ago",
-        date: "2011-10-18",
-        pages: createChapterPages("horimiya", 1, "A Page of Spring", 32)
-      }
-    ]
+    latestChapter: 125,
+    chapters: []
   },
   {
     id: "dangers-in-my-heart",
+    mangadexId: "6274fcab-df09-4ac5-b516-14152bd031c7",
     title: "The Dangers in My Heart",
     romajiTitle: "Boku no Kokoro no Yabai Yatsu",
-    kanjiTitle: "僕の心のヤバイやつ / BokuYaba",
+    kanjiTitle: "僕の心のヤバイやつ",
     storyAndArt: "Sakurai Norio",
-    cover: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
+    cover: "https://uploads.mangadex.org/covers/6274fcab-df09-4ac5-b516-14152bd031c7/8768d08a-dc48-48a6-8da8-705f94fac522.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/6274fcab-df09-4ac5-b516-14152bd031c7/8768d08a-dc48-48a6-8da8-705f94fac522.jpg",
     year: 2018,
+    status: "ONGOING",
+    type: "MANGA",
+    contentRating: "SAFE",
+    lang: "JA",
+    rank: 64,
+    rating: 9.7,
+    ratingVotes: 2900,
+    score: 9.28,
+    followed: 39500,
+    views: "3.1M",
+    demographics: "Shounen",
+    genres: ["Comedy", "Romance", "Slice of Life"],
+    tags: [
+      "Adapted to Anime",
+      "Height Difference",
+      "Mutual Pining",
+      "Popular x Shy",
+      "Slow Burn",
+      "Middle School"
+    ],
+    trackers: {
+      anilist: "https://anilist.co/manga/101583/Boku-no-Kokoro-no-Yabai-Yatsu/",
+      mal: "https://myanimelist.net/manga/112807/Boku_no_Kokoro_no_Yabai_Yatsu",
+      mangadex: "https://mangadex.org/title/6274fcab-df09-4ac5-b516-14152bd031c7"
+    },
+    synopsis: "Kyoutarou Ichikawa hides behind a facade of edgy, murderous fantasies, particularly targeting his class's resident model and beauty, Anna Yamada. But in the quiet sanctuary of the school library, he discovers Anna is an awkward, carefree sweets fanatic. As they spend quiet afternoons together, his dark thoughts dissolve into tender, innocent first love.",
+    highlights: "Masterclass slow-burn romance with unmatched psychological character growth and heart-melting romantic moments.",
+    featured: true,
+    latestChapter: 160,
+    chapters: []
+  },
+  {
+    id: "sign-of-affection",
+    mangadexId: "11bfa371-f53f-42b7-8213-94b1323b02b6",
+    title: "A Sign of Affection",
+    romajiTitle: "Yubisaki to Renren",
+    kanjiTitle: "ゆびさきと恋々",
+    storyAndArt: "Morishita Suu",
+    cover: "https://uploads.mangadex.org/covers/11bfa371-f53f-42b7-8213-94b1323b02b6/ebb2ae98-2c17-4c86-ac44-cadbef4082c7.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/11bfa371-f53f-42b7-8213-94b1323b02b6/ebb2ae98-2c17-4c86-ac44-cadbef4082c7.jpg",
+    year: 2019,
+    status: "ONGOING",
+    type: "MANGA",
+    contentRating: "SAFE",
+    lang: "JA",
+    rank: 156,
+    rating: 9.5,
+    ratingVotes: 1200,
+    score: 8.95,
+    followed: 21500,
+    views: "1.6M",
+    demographics: "Shoujo",
+    genres: ["Drama", "Romance", "Slice of Life"],
+    tags: [
+      "Adapted to Anime",
+      "College / Adult",
+      "Sign Language",
+      "Disability",
+      "Wholesome",
+      "Soft Aesthetic"
+    ],
+    trackers: {
+      anilist: "https://anilist.co/manga/111004/Yubisaki-to-Renren/",
+      mal: "https://myanimelist.net/manga/121504/Yubisaki_to_Renren",
+      mangadex: "https://mangadex.org/title/11bfa371-f53f-42b7-8213-94b1323b02b6"
+    },
+    synopsis: "Yuki Itose is a deaf college student whose world consists of silence and a close circle of friends. One day on a train, she is helped by Itsuomi Nagi, a multilingual upperclassman with a passion for traveling the world. Undeterred by her hearing impairment, Itsuomi warmly enters Yuki's life, expanding her world with every gesture.",
+    highlights: "Tender, poetic college romance celebrated for its respectful portrayal of deaf culture and gorgeous artwork.",
+    featured: false,
+    latestChapter: 45,
+    chapters: []
+  },
+  {
+    id: "my-dress-up-darling",
+    mangadexId: "aa6c76f7-5f5f-46b6-a800-911145f81b9b",
+    title: "My Dress-Up Darling",
+    romajiTitle: "Sono Bisque Doll wa Koi o Suru",
+    kanjiTitle: "その着せ替え人形は恋をする",
+    storyAndArt: "Fukuda Shinichi",
+    cover: "https://uploads.mangadex.org/covers/aa6c76f7-5f5f-46b6-a800-911145f81b9b/d3e909b9-c667-48a5-beec-ac96f23fa228.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/aa6c76f7-5f5f-46b6-a800-911145f81b9b/d3e909b9-c667-48a5-beec-ac96f23fa228.jpg",
+    year: 2018,
+    status: "ONGOING",
+    type: "MANGA",
+    contentRating: "SAFE",
+    lang: "JA",
+    rank: 35,
+    rating: 9.6,
+    ratingVotes: 5120,
+    score: 9.2,
+    followed: 72000,
+    views: "6.4M",
+    demographics: "Seinen",
+    genres: ["Comedy", "Romance", "Slice of Life"],
+    tags: [
+      "Adapted to Anime",
+      "Cosplay",
+      "Female Lead Falls in Love First",
+      "Crafting & Passion",
+      "Opposites Attract"
+    ],
+    trackers: {
+      anilist: "https://anilist.co/manga/101583/Sono-Bisque-Doll-wa-Koi-wo-Suru/",
+      mal: "https://myanimelist.net/manga/112268/Sono_Bisque_Doll_wa_Koi_wo_Suru",
+      mangadex: "https://mangadex.org/title/aa6c76f7-5f5f-46b6-a800-911145f81b9b"
+    },
+    synopsis: "Wakana Gojou dreams of becoming a master craftsman of traditional Hina dolls. Socially isolated due to his non-traditional hobby, he keeps to himself. But when school icon Marin Kitagawa catches him using a sewing machine, she excitedly begs him to help her make cosplay outfits! A dazzling bond of mutual passion and adoration begins.",
+    highlights: "Joyous celebration of artistic passion, cosplay culture, and a delightfully expressive female protagonist.",
+    featured: true,
+    latestChapter: 112,
+    chapters: []
+  },
+  {
+    id: "loving-yamada-lv999",
+    mangadexId: "643561e6-5c27-4382-95d3-8e84894a3fb6",
+    title: "My Love Story with Yamada-kun at Lv999",
+    romajiTitle: "Yamada-kun to Lv999 no Koi o Suru",
+    kanjiTitle: "山田くんとLv999の恋をする",
+    storyAndArt: "Mashiro",
+    cover: "https://uploads.mangadex.org/covers/643561e6-5c27-4382-95d3-8e84894a3fb6/7d185ef1-a06c-47c5-b181-5a081cb537ef.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/643561e6-5c27-4382-95d3-8e84894a3fb6/7d185ef1-a06c-47c5-b181-5a081cb537ef.jpg",
+    year: 2019,
     status: "ONGOING",
     type: "MANGA",
     contentRating: "SAFE",
     lang: "JA",
     rank: 88,
-    rating: 9.7,
-    ratingVotes: 5120,
-    score: 9.24,
-    followed: 44100,
-    views: "5.1M",
-    demographics: "Shounen",
-    genres: ["Comedy", "Romance", "Slice of Life", "School Life"],
-    tags: [
-      "Adapted to Anime",
-      "Height Difference",
-      "Chunibyo Boy x Model Girl",
-      "Library Meetings",
-      "Extreme Character Growth",
-      "Wholesome",
-      "First Love"
-    ],
-    trackers: {
-      anilist: "https://anilist.co/manga/101583/Boku-no-Kokoro-no-Yabai-Yatsu/",
-      mal: "https://myanimelist.net/manga/112807/Boku_no_Kokoro_no_Yabai_Yatsu",
-      mangaupdates: "https://www.mangaupdates.com/series/s3r9uyl",
-      mangadex: "https://mangadex.org/title/3df1a9a3-a1be-47a3-9df2-02ab3b60b86e",
-      mangabtt: "https://mangadex.org"
-    },
-    synopsis: "Kyotaro Ichikawa, an introverted middle schooler with an edgy imagination, harbours dark fantasies about murdering the school's prettiest girl, Anna Yamada. However, when he encounters her snacking alone in the quiet school library, he discovers she is an awkward, clumsy sweetheart. Gradually, his dark facade crumbles as genuine mutual affection begins to take root in their hearts.",
-    highlights: "Masterclass in gradual character development, genuine chemistry, and heart-melting romantic milestones.",
-    featured: true,
-    latestChapter: 154,
-    chapters: [
-      {
-        id: "by-154",
-        chapter: "154",
-        volume: "11",
-        title: "We Are in Love",
-        group: "Boredom Society",
-        verified: true,
-        likes: 560,
-        timeAgo: "1mo ago",
-        date: "2026-09-02",
-        pages: createChapterPages("dangers-in-my-heart", 154, "We Are in Love", 16)
-      },
-      {
-        id: "by-127",
-        chapter: "127",
-        volume: "9",
-        title: "I Confessed",
-        group: "Boredom Society",
-        verified: true,
-        likes: 1200,
-        timeAgo: "1yr ago",
-        date: "2025-06-14",
-        pages: createChapterPages("dangers-in-my-heart", 127, "I Confessed", 18)
-      },
-      {
-        id: "by-1",
-        chapter: "1",
-        volume: "1",
-        title: "I Was Stolen",
-        group: "Seven Seas",
-        verified: true,
-        likes: 410,
-        timeAgo: "6yrs ago",
-        date: "2018-03-08",
-        pages: createChapterPages("dangers-in-my-heart", 1, "I Was Stolen", 16)
-      }
-    ]
-  },
-  {
-    id: "sign-of-affection",
-    title: "A Sign of Affection",
-    romajiTitle: "Yubisaki to Renren",
-    kanjiTitle: "ゆびさきと恋々 / Yubisaki to Renren",
-    storyAndArt: "Morishita Suu",
-    cover: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1600&q=80",
-    year: 2019,
-    status: "ONGOING",
-    type: "MANGA",
-    contentRating: "SAFE",
-    lang: "JA",
-    rank: 150,
-    rating: 9.6,
-    ratingVotes: 3200,
-    score: 9.18,
-    followed: 29800,
+    rating: 9.5,
+    ratingVotes: 2300,
+    score: 9.08,
+    followed: 35400,
     views: "2.7M",
     demographics: "Shoujo",
-    genres: ["Romance", "Slice of Life", "Drama"],
+    genres: ["Comedy", "Romance", "Slice of Life"],
     tags: [
       "Adapted to Anime",
-      "Deaf Female Lead",
-      "Sign Language",
-      "College / University",
-      "World Traveler Male Lead",
-      "Gentle & Pure",
-      "Artistic Aesthetics"
+      "Gaming Romance",
+      "College / Adult",
+      "Kuudere Male Lead",
+      "Guild Buddies"
     ],
     trackers: {
-      anilist: "https://anilist.co/manga/111000/Yubisaki-to-Renren/",
-      mal: "https://myanimelist.net/manga/121504/Yubisaki_to_Renren",
-      mangaupdates: "https://www.mangaupdates.com/series/g80718g",
-      mangadex: "https://mangadex.org/title/87504a57-128b-4b20-9eb3-9994c965c2cc",
-      mangabtt: "https://mangadex.org"
+      anilist: "https://anilist.co/manga/109501/Yamada-kun-to-Lv999-no-Koi-wo-Suru/",
+      mal: "https://myanimelist.net/manga/125052/Yamada-kun_to_Lv999_no_Koi_wo_Suru",
+      mangadex: "https://mangadex.org/title/643561e6-5c27-4382-95d3-8e84894a3fb6"
     },
-    synopsis: "Yuki Itose is a deaf college student whose world is quiet and serene, populated by her close friends and social media. One day on a train, she meets Itsuomi Nagi, a multilingual upperclassman with a silver-haired wanderlust spirit. Unfazed by her deafness, Itsuomi warmly enters her life, introducing her to new horizons while learning sign language to share the delicate world of silence.",
-    highlights: "A visually and emotionally poetic masterpiece exploring communication, warmth, and tender modern romance.",
-    featured: true,
-    latestChapter: 45,
-    chapters: [
-      {
-        id: "sa-45",
-        chapter: "45",
-        volume: "10",
-        title: "Words Carried by the Wind",
-        group: "Kodansha",
-        verified: true,
-        likes: 310,
-        timeAgo: "1mo ago",
-        date: "2026-08-20",
-        pages: createChapterPages("sign-of-affection", 45, "Words Carried by the Wind", 24)
-      },
-      {
-        id: "sa-1",
-        chapter: "1",
-        volume: "1",
-        title: "Yuki's World",
-        group: "Kodansha",
-        verified: true,
-        likes: 740,
-        timeAgo: "5yrs ago",
-        date: "2019-07-24",
-        pages: createChapterPages("sign-of-affection", 1, "Yuki's World", 38)
-      }
-    ]
-  },
-  {
-    id: "my-dress-up-darling",
-    title: "My Dress-Up Darling",
-    romajiTitle: "Sono Bisque Doll wa Koi wo Suru",
-    kanjiTitle: "その着せ替え人形は恋をする / Sono Bisque Doll",
-    storyAndArt: "Fukuda Shinichi",
-    cover: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1600&q=80",
-    year: 2018,
-    status: "ONGOING",
-    type: "MANGA",
-    contentRating: "SAFE",
-    lang: "JA",
-    rank: 65,
-    rating: 9.5,
-    ratingVotes: 11400,
-    score: 9.12,
-    followed: 76000,
-    views: "8.4M",
-    demographics: "Seinen",
-    genres: ["Comedy", "Romance", "Slice of Life", "Ecchi"],
-    tags: [
-      "Adapted to Anime",
-      "Cosplay Passion",
-      "Gyaru x Craftsman",
-      "Opposites Attract",
-      "Heartfelt Support",
-      "High School",
-      "Tailoring & Sewing"
-    ],
-    trackers: {
-      anilist: "https://anilist.co/manga/101583/",
-      mal: "https://myanimelist.net/manga/112268/Sono_Bisque_Doll_wa_Koi_wo_Suru",
-      mangaupdates: "https://www.mangaupdates.com/series/38pgh9r",
-      mangadex: "https://mangadex.org/title/aa6c76f7-5f5f-46b6-a800-9181510c4b9b",
-      mangabtt: "https://mangadex.org"
-    },
-    synopsis: "Wakana Gojo is a high school craftsman who spends all his spare time creating traditional Hina dolls. Marin Kitagawa is the school's radiant gyaru who adores anime, gaming, and cosplay. When Marin discovers Gojo's exceptional sewing talents, she enthusiastically enlists his help to bring her dream cosplay characters to life, igniting a heartfelt partnership filled with devotion.",
-    highlights: "Electric chemistry, mutual respect, and infectious enthusiasm for shared crafts and passion.",
+    synopsis: "After being dumped by her boyfriend for another girl he met in an MMORPG, college student Akane Kinoshita enters the game to take out her frustration on mobs. There, she encounters high school pro-gamer Akito Yamada, an emotionless guild member who couldn't care less about romance. When real life brings them together, Akane slowly levels up Yamada's heart.",
+    highlights: "Charming, modern gamer romance brimming with heart, natural chemistry, and relatable adult comedy.",
     featured: false,
     latestChapter: 110,
-    chapters: [
-      {
-        id: "dd-110",
-        chapter: "110",
-        volume: "13",
-        title: "Confession in the Snow",
-        group: "Church of Kuro",
-        verified: true,
-        likes: 1890,
-        timeAgo: "2mos ago",
-        date: "2026-07-28",
-        pages: createChapterPages("my-dress-up-darling", 110, "Confession in the Snow", 22)
-      },
-      {
-        id: "dd-1",
-        chapter: "1",
-        volume: "1",
-        title: "Someone in a Different World",
-        group: "Square Enix",
-        verified: true,
-        likes: 920,
-        timeAgo: "6yrs ago",
-        date: "2018-01-19",
-        pages: createChapterPages("my-dress-up-darling", 1, "Someone in a Different World", 42)
-      }
-    ]
-  },
-  {
-    id: "loving-yamada-lv999",
-    title: "My Love Story with Yamada-kun at Lv999",
-    romajiTitle: "Yamada-kun to Lv999 no Koi wo Suru",
-    kanjiTitle: "山田くんとLv999の恋をする / Loving Yamada at Lv999",
-    storyAndArt: "Mashiro",
-    cover: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1600&q=80",
-    year: 2019,
-    status: "ONGOING",
-    type: "MANGA",
-    contentRating: "SAFE",
-    lang: "JA",
-    rank: 104,
-    rating: 9.6,
-    ratingVotes: 4300,
-    score: 9.21,
-    followed: 35000,
-    views: "3.9M",
-    demographics: "Shoujo",
-    genres: ["Comedy", "Romance", "Gaming", "Slice of Life"],
-    tags: [
-      "Adapted to Anime",
-      "MMO Gaming",
-      "College Student x Pro Gamer",
-      "Slow Burn",
-      "Heartwarming Support",
-      "Wholesome",
-      "Adult Romance"
-    ],
-    trackers: {
-      anilist: "https://anilist.co/manga/109501/",
-      mal: "https://myanimelist.net/manga/125052/Yamada-kun_to_Lv999_no_Koi_wo_Suru",
-      mangaupdates: "https://www.mangaupdates.com/series/01dshh4",
-      mangadex: "https://mangadex.org/title/0c44e94c-4731-419b-a01b-c741e9b8849b",
-      mangabtt: "https://mangadex.org"
-    },
-    synopsis: "After being dumped by her boyfriend for another girl he met in an online game, college student Akane Kinoshita enters an in-person gaming festival looking for vengeance. Instead, she collides with Akito Yamada, an emotionless high school pro-gamer and guildmate. Though initially cold, Yamada's steady presence becomes an unexpected refuge as feelings level up.",
-    highlights: "Charming, relatable, and comforting romance bridging digital worlds and authentic emotional connection.",
-    featured: false,
-    latestChapter: 105,
-    chapters: [
-      {
-        id: "ym-105",
-        chapter: "105",
-        volume: "10",
-        title: "Level 105: Our Future Together",
-        group: "Mangamo",
-        verified: true,
-        likes: 420,
-        timeAgo: "1mo ago",
-        date: "2026-08-30",
-        pages: createChapterPages("loving-yamada-lv999", 105, "Level 105: Our Future Together", 20)
-      },
-      {
-        id: "ym-1",
-        chapter: "1",
-        volume: "1",
-        title: "Level 1: This Is Why I Hate Gamer Guys",
-        group: "Mangamo",
-        verified: true,
-        likes: 670,
-        timeAgo: "5yrs ago",
-        date: "2019-03-07",
-        pages: createChapterPages("loving-yamada-lv999", 1, "Level 1: This Is Why I Hate Gamer Guys", 34)
-      }
-    ]
+    chapters: []
   },
   {
     id: "kimi-ni-todoke",
+    mangadexId: "b3b6fa42-08df-4663-b827-caaa49c7ccbf",
     title: "Kimi ni Todoke: From Me to You",
     romajiTitle: "Kimi ni Todoke",
-    kanjiTitle: "君に届け / Reaching You",
+    kanjiTitle: "君に届け",
     storyAndArt: "Shiina Karuho",
-    cover: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80",
+    cover: "https://uploads.mangadex.org/covers/b3b6fa42-08df-4663-b827-caaa49c7ccbf/726c4431-7d40-4b2d-b143-b6370bb7b475.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/b3b6fa42-08df-4663-b827-caaa49c7ccbf/726c4431-7d40-4b2d-b143-b6370bb7b475.jpg",
     year: 2005,
-    status: "FINISHED",
+    status: "COMPLETED",
     type: "MANGA",
     contentRating: "SAFE",
     lang: "JA",
-    rank: 30,
-    rating: 9.5,
-    ratingVotes: 12500,
-    score: 9.16,
-    followed: 52000,
-    views: "7.1M",
+    rank: 110,
+    rating: 9.4,
+    ratingVotes: 1890,
+    score: 8.89,
+    followed: 28900,
+    views: "2.3M",
     demographics: "Shoujo",
-    genres: ["Romance", "School Life", "Slice of Life", "Drama"],
+    genres: ["Drama", "Romance", "School", "Slice of Life"],
     tags: [
       "Adapted to Anime",
-      "Classic Masterpiece",
+      "Pure Love",
+      "Popular x Shy",
+      "Found Family",
       "Misunderstood Protagonist",
-      "Pure Wholesome Love",
-      "Sunny Boy x Shy Girl",
-      "Friendship & Growth"
+      "Classic Masterpiece"
     ],
     trackers: {
       anilist: "https://anilist.co/manga/33378/Kimi-ni-Todoke/",
       mal: "https://myanimelist.net/manga/3378/Kimi_ni_Todoke",
-      mangaupdates: "https://www.mangaupdates.com/series/688r1c1",
-      mangadex: "https://mangadex.org/title/8c93de4a-3ff6-4e50-8b1b-6893dd002ef2",
-      mangabtt: "https://mangadex.org"
+      mangadex: "https://mangadex.org/title/b3b6fa42-08df-4663-b827-caaa49c7ccbf"
     },
-    synopsis: "Sawako Kuronuma has always been misunderstood. Because of her gloomy demeanor and long black hair, her classmates call her 'Sadako'. All she truly desires is to make friends. When the cheerful, wildly popular Shouta Kazehaya starts conversing with her naturally without prejudice, Sawako's entire school life blooms with warmth and tender romance.",
-    highlights: "The timeless gold standard of pure shoujo romance and personal courage.",
+    synopsis: "Sawako Kuronuma is nicknamed 'Sadako' by her classmates due to her resemblance to the ghost girl from The Ring. Despite her terrifying exterior, she is a timid and sweet girl who only wishes to make friends. When Shouta Kazehaya, the most popular boy in class, treats her with genuine kindness, Sawako's whole world transforms with colors of first love.",
+    highlights: "The timeless pure-hearted romance standard that has touched millions of readers across generations.",
     featured: false,
     latestChapter: 123,
-    chapters: [
-      {
-        id: "kt-123",
-        chapter: "123",
-        volume: "30",
-        title: "From Me to You: Forever",
-        group: "VIZ Media",
-        verified: true,
-        likes: 890,
-        timeAgo: "7yrs ago",
-        date: "2017-11-13",
-        pages: createChapterPages("kimi-ni-todoke", 123, "From Me to You: Forever", 36)
-      },
-      {
-        id: "kt-1",
-        chapter: "1",
-        volume: "1",
-        title: "Prologue",
-        group: "VIZ Media",
-        verified: true,
-        likes: 950,
-        timeAgo: "15yrs ago",
-        date: "2005-08-11",
-        pages: createChapterPages("kimi-ni-todoke", 1, "Prologue", 46)
-      }
-    ]
+    chapters: []
   },
   {
     id: "tonikaku-kawaii",
+    mangadexId: "30f3ac69-21b6-45ad-a110-d011b7aaadaa",
     title: "Fly Me to the Moon (Tonikaku Kawaii)",
     romajiTitle: "Tonikaku Kawaii",
-    kanjiTitle: "とにかく可愛い / Fly Me to the Moon",
+    kanjiTitle: "トニカクカワイイ",
     storyAndArt: "Hata Kenjiro",
-    cover: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=80",
-    banner: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
+    cover: "https://uploads.mangadex.org/covers/30f3ac69-21b6-45ad-a110-d011b7aaadaa/fb735d33-b723-4446-9258-eefbffae222f.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/30f3ac69-21b6-45ad-a110-d011b7aaadaa/fb735d33-b723-4446-9258-eefbffae222f.jpg",
     year: 2018,
     status: "ONGOING",
     type: "MANGA",
     contentRating: "SAFE",
     lang: "JA",
-    rank: 112,
-    rating: 9.4,
-    ratingVotes: 6400,
-    score: 9.06,
-    followed: 41200,
-    views: "6.3M",
+    rank: 75,
+    rating: 9.5,
+    ratingVotes: 3100,
+    score: 9.04,
+    followed: 44200,
+    views: "3.5M",
     demographics: "Shounen",
-    genres: ["Comedy", "Romance", "Slice of Life", "Mystery"],
+    genres: ["Comedy", "Romance", "Slice of Life"],
     tags: [
       "Adapted to Anime",
-      "Marriage First",
-      "Pure Sugar / Fluff",
-      "Newlyweds",
-      "Cute Couple Dynamics",
-      "Wholesome Romance"
+      "Married Couple",
+      "Wholesome / Fluff",
+      "Love at First Sight",
+      "Mystery"
     ],
     trackers: {
-      anilist: "https://anilist.co/manga/101258/",
-      mal: "https://myanimelist.net/manga/112589/Tonikaku_Kawaii",
-      mangaupdates: "https://www.mangaupdates.com/series/gflq0y7",
-      mangadex: "https://mangadex.org/title/30f3ac69-21b6-45ad-a110-d011b7aaadaa",
-      mangabtt: "https://mangadex.org"
+      anilist: "https://anilist.co/manga/101454/Tonikaku-Kawaii/",
+      mal: "https://myanimelist.net/manga/113888/Tonikaku_Kawaii",
+      mangadex: "https://mangadex.org/title/30f3ac69-21b6-45ad-a110-d011b7aaadaa"
     },
-    synopsis: "Nasa Yuzaki falls in love at first sight with the mysterious Tsukasa on the night of his high school entrance exams. When he confesses his feelings, Tsukasa agrees to date him—under one condition: they get married first! Thus begins the charming, unabashedly fluffy domestic life of two adorable newlyweds.",
-    highlights: "Maximum sweetness, zero misunderstandings, pure wholesome newlywed happiness.",
+    synopsis: "Nasa Yuzaki falls in love at first sight with the mysterious Tsukasa on a snowy night. When he confesses his feelings, she agrees to date him—under one condition: they get married first! Without hesitation, Nasa agrees, kicking off a deliciously sweet newlywed life filled with fluffy daily moments.",
+    highlights: "The ultimate cozy newlywed slice-of-life romance loaded with pure sugar and delightful marital affection.",
     featured: false,
-    latestChapter: 280,
-    chapters: [
-      {
-        id: "tk-280",
-        chapter: "280",
-        volume: "27",
-        title: "Eternal Promise",
-        group: "Tonikaku Scans",
-        verified: true,
-        likes: 380,
-        timeAgo: "3wks ago",
-        date: "2026-09-22",
-        pages: createChapterPages("tonikaku-kawaii", 280, "Eternal Promise", 18)
-      },
-      {
-        id: "tk-1",
-        chapter: "1",
-        volume: "1",
-        title: "Destiny",
-        group: "VIZ Media",
-        verified: true,
-        likes: 620,
-        timeAgo: "6yrs ago",
-        date: "2018-02-14",
-        pages: createChapterPages("tonikaku-kawaii", 1, "Destiny", 30)
-      }
-    ]
+    latestChapter: 290,
+    chapters: []
   }
 ];
 
-export const GET_MANGA_BY_ID = (id) => {
-  return ROMANCE_DATABASE.find((m) => m.id === id) || null;
-};
+// In-memory registry for manga discovered from MangaDex live search & browse
+const dynamicMangaRegistry = new Map();
+
+export function REGISTER_DYNAMIC_MANGA(manga) {
+  if (!manga || !manga.id) return;
+  dynamicMangaRegistry.set(manga.id, manga);
+  if (manga.mangadexId) {
+    dynamicMangaRegistry.set(manga.mangadexId, manga);
+  }
+}
+
+export function GET_MANGA_BY_ID(id) {
+  if (!id) return ROMANCE_DATABASE[0];
+  // 1. Direct match in curated database by id
+  const fromDb = ROMANCE_DATABASE.find(
+    (m) => m.id === id || m.mangadexId === id || `md-${m.mangadexId}` === id
+  );
+  if (fromDb) return fromDb;
+
+  // 2. Match in dynamic registry (from search/browse)
+  if (dynamicMangaRegistry.has(id)) {
+    return dynamicMangaRegistry.get(id);
+  }
+
+  // 3. If it looks like a MangaDex UUID, create a placeholder object that can be enriched
+  const cleanId = id.replace(/^md-/, "");
+  return {
+    id: id,
+    mangadexId: cleanId,
+    title: "Loading Manga...",
+    romajiTitle: "",
+    storyAndArt: "Romance Artist",
+    cover: null,
+    rating: 9.0,
+    genres: ["Romance"],
+    tags: ["Romance Manga"],
+    synopsis: "Fetching details from MangaDex...",
+    chapters: []
+  };
+}

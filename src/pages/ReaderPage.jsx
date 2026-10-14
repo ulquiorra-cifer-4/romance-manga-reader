@@ -14,10 +14,12 @@ import {
   HelpCircle,
   ZoomIn,
   ZoomOut,
-  ArrowRight
+  ArrowRight,
+  Loader
 } from "lucide-react";
 import { useRomance } from "../context/RomanceContext";
 import { ROMANCE_DATABASE, GET_MANGA_BY_ID } from "../data/romanceMangaDatabase";
+import { fetchChapters, fetchChapterPages, fetchMangaCover } from "../services/mangadexApi";
 import CommentsDrawer from "../components/CommentsDrawer";
 import ChapterDrawer from "../components/ChapterDrawer";
 
@@ -33,10 +35,35 @@ export default function ReaderPage({ mangaId, chapterId }) {
   } = useRomance();
 
   const manga = GET_MANGA_BY_ID(mangaId) || ROMANCE_DATABASE[0];
-  const chapters = manga.chapters || [];
+
+  // Live data state
+  const [liveChapters, setLiveChapters] = useState([]);
+  const [livePages, setLivePages] = useState([]);
+  const [isLoadingPages, setIsLoadingPages] = useState(true);
+  const [pageError, setPageError] = useState(null);
+  const [liveCover, setLiveCover] = useState(manga.cover);
+
+  // Fetch chapter list from MangaDex
+  useEffect(() => {
+    const mangadexId = manga.mangadexId;
+    if (!mangadexId) return;
+
+    fetchChapters(mangadexId).then((chapters) => {
+      setLiveChapters(chapters);
+    });
+
+    if (!manga.cover) {
+      fetchMangaCover(mangadexId).then((url) => {
+        if (url) setLiveCover(url);
+      });
+    }
+  }, [manga.mangadexId, manga.cover]);
+
+  // Determine chapters source
+  const chapters = liveChapters.length > 0 ? liveChapters : (manga.chapters || []);
   const currentChapterIndex = chapters.findIndex((c) => c.id === chapterId);
   const currentChapter = chapters[currentChapterIndex] || chapters[0] || {
-    id: "default",
+    id: chapterId || "default",
     chapter: "1",
     title: "Chapter 1",
     pages: []
@@ -44,6 +71,34 @@ export default function ReaderPage({ mangaId, chapterId }) {
 
   const prevChapter = currentChapterIndex < chapters.length - 1 ? chapters[currentChapterIndex + 1] : null;
   const nextChapter = currentChapterIndex > 0 ? chapters[currentChapterIndex - 1] : null;
+
+  // Fetch actual manga page images from MangaDex at-home server
+  useEffect(() => {
+    const effectiveChapterId = chapterId || currentChapter.id;
+    if (!effectiveChapterId || effectiveChapterId === "default") return;
+
+    setIsLoadingPages(true);
+    setPageError(null);
+    setLivePages([]);
+
+    fetchChapterPages(effectiveChapterId)
+      .then((pages) => {
+        if (pages.length > 0) {
+          setLivePages(pages);
+        } else {
+          setPageError("No pages found for this chapter. It may be an external-only chapter.");
+        }
+        setIsLoadingPages(false);
+      })
+      .catch((err) => {
+        console.warn("Failed to load chapter pages:", err);
+        setPageError("Failed to load manga pages. Please try again.");
+        setIsLoadingPages(false);
+      });
+
+    // Scroll to top when chapter changes
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [chapterId, currentChapter.id]);
 
   // Reader states
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
@@ -56,7 +111,8 @@ export default function ReaderPage({ mangaId, chapterId }) {
   const autoScrollRef = useRef(null);
   const lastTimeRef = useRef(null);
 
-  const pages = currentChapter.pages || [];
+  // Use live pages from API
+  const pages = livePages.length > 0 ? livePages : (currentChapter.pages || []);
   const totalPages = pages.length || 1;
 
   // Track scroll position, update progress & current page
@@ -201,6 +257,9 @@ export default function ReaderPage({ mangaId, chapterId }) {
     setZoomLevel((prev) => Math.min(160, Math.max(50, prev + delta)));
   };
 
+  // Build the manga object with live chapters for the ChapterDrawer
+  const mangaWithChapters = { ...manga, chapters, cover: liveCover || manga.cover };
+
   return (
     <div
       className="reader-page"
@@ -264,7 +323,7 @@ export default function ReaderPage({ mangaId, chapterId }) {
             onClick={() => setIsChapterDrawerOpen(true)}
             title="Click to jump to another chapter"
           >
-            Ch. {currentChapter.chapter} / {manga.latestChapter || chapters[0]?.chapter || "250"}
+            Ch. {currentChapter.chapter} / {manga.latestChapter || chapters[0]?.chapter || "?"}
           </span>
 
           <button
@@ -383,17 +442,70 @@ export default function ReaderPage({ mangaId, chapterId }) {
           className={`reader-canvas ${canvasFit === "height" ? "fit-height" : canvasFit === "full" ? "fit-full" : ""}`}
           style={{ width: `${zoomLevel}%` }}
         >
-          {pages.map((p, idx) => (
+          {/* Loading state */}
+          {isLoadingPages && (
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "60vh",
+              gap: "1.5rem",
+              color: "#94a3b8"
+            }}>
+              <Loader size={40} className="spin" color="#22d3ee" />
+              <div style={{ textAlign: "center" }}>
+                <p style={{ fontSize: "1.1rem", color: "#fff", fontWeight: 600 }}>Loading Manga Pages...</p>
+                <p style={{ fontSize: "0.85rem", marginTop: 6 }}>Fetching chapter images from MangaDex servers</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error state */}
+          {pageError && !isLoadingPages && (
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "40vh",
+              gap: "1rem",
+              color: "#ef4444",
+              textAlign: "center",
+              padding: "2rem"
+            }}>
+              <p style={{ fontSize: "1.1rem", fontWeight: 600 }}>{pageError}</p>
+              <p style={{ fontSize: "0.85rem", color: "#94a3b8" }}>
+                This chapter may only be available on the publisher's website.
+              </p>
+              {nextChapter && (
+                <button
+                  className="btn-primary"
+                  onClick={() => navigateTo("reader", { mangaId: manga.id, chapterId: nextChapter.id })}
+                  style={{ marginTop: "1rem" }}
+                >
+                  <span>Try Next Chapter ({nextChapter.chapter})</span>
+                  <ArrowRight size={16} />
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Actual manga pages */}
+          {!isLoadingPages && pages.length > 0 && pages.map((p) => (
             <div key={p.page} className="manga-page-frame">
               <img
                 src={p.url}
                 alt={`${manga.title} - Ch. ${currentChapter.chapter} Page ${p.page}`}
                 className={`manga-page-img ${settings.greyscalePages ? "greyscale" : ""}`}
-                loading={settings.preloadMode === "all" || idx < 4 ? "eager" : "lazy"}
+                loading={settings.preloadMode === "all" || p.page <= 4 ? "eager" : "lazy"}
                 onError={(e) => {
-                  // Automatic fallback panel to ensure zero image failures
-                  e.target.onerror = null;
-                  e.target.src = `https://picsum.photos/seed/${manga.id}-p${p.page}/900/1300`;
+                  // Try fallback URL (full quality if data-saver failed, or vice versa)
+                  if (p.fallbackUrl && e.target.src !== p.fallbackUrl) {
+                    e.target.src = p.fallbackUrl;
+                  } else if (p.dataSaverUrl && e.target.src !== p.dataSaverUrl) {
+                    e.target.src = p.dataSaverUrl;
+                  }
                 }}
               />
               <span className="page-number-tag">
@@ -403,51 +515,53 @@ export default function ReaderPage({ mangaId, chapterId }) {
           ))}
 
           {/* End of Chapter Card */}
-          <div className="chapter-end-card">
-            <h3 className="chapter-end-title">
-              End of Chapter {currentChapter.chapter}
-            </h3>
-            <p className="chapter-end-desc">
-              {currentChapter.title ? `"${currentChapter.title}"` : "You've finished this chapter!"}
-            </p>
+          {!isLoadingPages && pages.length > 0 && (
+            <div className="chapter-end-card">
+              <h3 className="chapter-end-title">
+                End of Chapter {currentChapter.chapter}
+              </h3>
+              <p className="chapter-end-desc">
+                {currentChapter.title ? `"${currentChapter.title}"` : "You've finished this chapter!"}
+              </p>
 
-            <div className="chapter-end-actions">
-              {nextChapter ? (
-                <button
-                  className="btn-primary"
-                  onClick={() => {
-                    navigateTo("reader", { mangaId: manga.id, chapterId: nextChapter.id });
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                >
-                  <span>Next: Chapter {nextChapter.chapter}</span>
-                  <ArrowRight size={18} />
-                </button>
-              ) : (
-                <button
-                  className="btn-primary"
-                  onClick={() => navigateTo("manga", { mangaId: manga.id })}
-                >
-                  <span>Back to Series Info</span>
-                </button>
-              )}
+              <div className="chapter-end-actions">
+                {nextChapter ? (
+                  <button
+                    className="btn-primary"
+                    onClick={() => {
+                      navigateTo("reader", { mangaId: manga.id, chapterId: nextChapter.id });
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  >
+                    <span>Next: Chapter {nextChapter.chapter}</span>
+                    <ArrowRight size={18} />
+                  </button>
+                ) : (
+                  <button
+                    className="btn-primary"
+                    onClick={() => navigateTo("manga", { mangaId: manga.id })}
+                  >
+                    <span>Back to Series Info</span>
+                  </button>
+                )}
 
-              <button
-                className="btn-secondary"
-                onClick={() => setIsCommentsOpen(true)}
-              >
-                <MessageSquare size={16} />
-                <span>Join Romance Discussion</span>
-              </button>
+                <button
+                  className="btn-secondary"
+                  onClick={() => setIsCommentsOpen(true)}
+                >
+                  <MessageSquare size={16} />
+                  <span>Join Romance Discussion</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </main>
 
       {/* Drawers */}
       <CommentsDrawer currentChapterTitle={`Ch. ${currentChapter.chapter}: ${currentChapter.title}`} />
       <ChapterDrawer
-        manga={manga}
+        manga={mangaWithChapters}
         currentChapterId={currentChapter.id}
         onSelectChapter={(id) => navigateTo("reader", { mangaId: manga.id, chapterId: id })}
       />
