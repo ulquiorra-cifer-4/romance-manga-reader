@@ -1,16 +1,74 @@
-# React + Vite
+# 💖 AmoreComix — The Online Romance Manga Sanctuary
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+An exclusive online manga reader built specifically for **romance manga lovers**, featuring a modern dark-mode aesthetic, customizable smooth auto-scroll engine, nighttime eyecare dimmer, chapter preloading, and full reading progress tracking.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌟 Key Features
 
-## React Compiler
+### 📖 Immersive Reader Engine
+- **Pixel-Accurate Auto-Scroll**: Configurable speed slider from `20 px/s` to `400 px/s` with smooth animation frame interpolation.
+- **Nighttime Eyecare Dimmer**: Screen dimming slider (`0%` to `80%`) to eliminate bright panel glare during nighttime reading.
+- **Flexible In-Reader Progress Bar**: Position the reading progress bar anywhere (*Left*, *Top*, *Bottom*, *Right*, or *Hidden*).
+- **Smooth & Fast Keyboard Navigation**: Scroll with `Arrow keys`, `Space`, `W`/`S`, and toggle features with single-key shortcuts (`A` for auto-scroll, `F` for fullscreen, `M` for settings).
+- **Greyscale Mode**: Toggle vintage monochrome manga look.
+- **Smart Image Preloader**: Choose between `Preload some` (bandwidth saver) or `Preload all` (instant scrolling).
+- **Zero-Error Fallback**: Smart buffer fallback system ensures pages never fail to load.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 💖 Curated Romance Masterpiece Catalog
+- **Blue Box (*Ao no Hako*)**: Sports romance with Chinatsu & Taiki.
+- **The Fragrant Flower Blooms with Dignity (*Kaoru Hana wa Rin to Saku*)**: Wholesome romance.
+- **Kaguya-sama: Love Is War**: Legendary mind-game rom-com.
+- **Horimiya**: Slice of life romance.
+- **The Dangers in My Heart (*Boku no Kokoro no Yabai Yatsu*)**: Heartwarming character growth.
+- **A Sign of Affection (*Yubisaki to Renren*)**: College romance with sign language.
+- **My Dress-Up Darling (*Sono Bisque Doll wa Koi wo Suru*)**: Cosplay & romance.
+- **My Love Story with Yamada-kun at Lv999**: Gaming romance.
+- **Fly Me to the Moon (*Tonikaku Kawaii*)**: Newlywed fluff.
+- **MangaDex Live Sync**: Search and browse thousands of romance series live from the MangaDex public API.
 
-## Expanding the Oxlint configuration
+### 📚 Personal Library & Tracking
+- **Reading Status**: Categorize into *Reading*, *Plan to Read*, *Completed*, and *Favorites*.
+- **Reading History**: Automatically saves chapter number, page, and scroll progress to resume reading right where you stopped.
+- **Chapter Discussion Drawer**: Community reaction drawer to share thoughts on sweet chapter moments.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19 + Vite 8
+- **Styling**: Vanilla CSS with modern CSS custom properties and sleek dark tokens
+- **Icons**: Lucide React
+- **API**: MangaDex REST API integration with CORS proxy support & fallback generators
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v18 or higher recommended)
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/ulquiorra-cifer-4/romance-manga-reader.git
+
+# Navigate to project directory
+cd romance-manga-reader
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+Open your browser at `http://localhost:5173/` to enjoy reading!
+
+---
+
+## 📜 License
+
+MIT License. Designed with devotion for romance manga fans worldwide.
