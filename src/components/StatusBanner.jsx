@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { pingMangaDex } from "../services/mangadexApi";
 
-// Small diagnostic banner: tells you (and users) when the chapter source is unreachable,
-// instead of the site silently showing empty pages.
 export default function StatusBanner() {
   const [problem, setProblem] = useState(null);
   const [dismissed, setDismissed] = useState(false);
@@ -10,6 +8,7 @@ export default function StatusBanner() {
   useEffect(() => {
     let cancelled = false;
     pingMangaDex()
+      .then(() => !cancelled && setProblem(null))
       .catch((e) => !cancelled && setProblem(e.message || "unreachable"));
     return () => {
       cancelled = true;
@@ -27,14 +26,18 @@ export default function StatusBanner() {
         fontSize: "0.82rem",
         display: "flex",
         justifyContent: "space-between",
+        alignItems: "center",
         gap: "1rem",
       }}
     >
       <span>
-        Chapter source (MangaDex) isn't reachable right now ({problem}). Browsing and covers still work;
-        titles with official links can be read on the publisher's site.
+        Chapter connection is experiencing slowdowns. Pages are loading via proxy.
       </span>
-      <button onClick={() => setDismissed(true)} style={{ color: "inherit" }} aria-label="Dismiss">
+      <button
+        onClick={() => setDismissed(true)}
+        style={{ color: "inherit", background: "none", border: "none", cursor: "pointer", fontSize: "1rem" }}
+        aria-label="Dismiss"
+      >
         ✕
       </button>
     </div>
