@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Bookmark, Heart, Clock, CheckCircle, BookOpen, Trash2, ArrowRight } from "lucide-react";
 import { useRomance } from "../context/RomanceContext";
+import { onCoverError } from "../services/mangadexApi";
 import { ROMANCE_DATABASE } from "../data/romanceMangaDatabase";
 import MangaCard from "../components/MangaCard";
 
@@ -176,8 +177,8 @@ export default function LibraryPage() {
                     style={{ display: "flex", alignItems: "center", gap: "1rem", cursor: "pointer", flex: 1 }}
                     onClick={() => navigateTo("reader", { mangaId: item.mangaId, chapterId: item.chapterId })}
                   >
-                    <img
-                      src={manga.cover}
+                    <img referrerPolicy="no-referrer"
+                      src={manga.cover} onError={onCoverError}
                       alt={item.mangaTitle}
                       style={{ width: 44, height: 60, objectFit: "cover", borderRadius: 6 }}
                     />

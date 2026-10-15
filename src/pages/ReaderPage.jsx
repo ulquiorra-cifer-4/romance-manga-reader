@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useRomance } from "../context/RomanceContext";
 import { ROMANCE_DATABASE, GET_MANGA_BY_ID } from "../data/romanceMangaDatabase";
-import { fetchChapters, fetchChapterPages, fetchMangaCover } from "../services/mangadexApi";
+import { fetchChapters, fetchChapterPages, fetchMangaCover, ensureMangaDexId } from "../services/mangadexApi";
 import CommentsDrawer from "../components/CommentsDrawer";
 import ChapterDrawer from "../components/ChapterDrawer";
 
@@ -45,19 +45,19 @@ export default function ReaderPage({ mangaId, chapterId }) {
 
   // Fetch chapter list from MangaDex
   useEffect(() => {
-    const mangadexId = manga.mangadexId;
-    if (!mangadexId) return;
-
-    fetchChapters(mangadexId).then((chapters) => {
-      setLiveChapters(chapters);
-    });
-
-    if (!manga.cover) {
-      fetchMangaCover(mangadexId).then((url) => {
-        if (url) setLiveCover(url);
-      });
-    }
-  }, [manga.mangadexId, manga.cover]);
+    let cancelled = false;
+    ensureMangaDexId(manga)
+      .then((mangadexId) => {
+        if (!mangadexId || cancelled) return null;
+        if (!manga.cover) fetchMangaCover(mangadexId).then((url) => !cancelled && url && setLiveCover(url));
+        return fetchChapters(mangadexId);
+      })
+      .then((chapters) => chapters && !cancelled && setLiveChapters(chapters))
+      .catch((err) => console.warn("Chapter list unavailable:", err));
+    return () => {
+      cancelled = true;
+    };
+  }, [manga.id, manga.cover]);
 
   // Determine chapters source
   const chapters = liveChapters.length > 0 ? liveChapters : (manga.chapters || []);
@@ -80,6 +80,13 @@ export default function ReaderPage({ mangaId, chapterId }) {
     setIsLoadingPages(true);
     setPageError(null);
     setLivePages([]);
+
+    // Not a real MangaDex chapter id (e.g. stale link, or a title with no readable chapters)
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(effectiveChapterId)) {
+      setPageError("This chapter isn't hosted on MangaDex.");
+      setIsLoadingPages(false);
+      return;
+    }
 
     fetchChapterPages(effectiveChapterId)
       .then((pages) => {
@@ -478,6 +485,18 @@ export default function ReaderPage({ mangaId, chapterId }) {
               <p style={{ fontSize: "0.85rem", color: "#94a3b8" }}>
                 This chapter may only be available on the publisher's website.
               </p>
+              {manga.officialLinks?.length > 0 && (
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+                  {manga.officialLinks.slice(0, 4).map((l) => (
+                    <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="btn-secondary" style={{ textDecoration: "none" }}>
+                      Read on {l.site} ↗
+                    </a>
+                  ))}
+                </div>
+              )}
+              <button className="btn-secondary" onClick={() => navigateTo("manga", { mangaId: manga.id })}>
+                Back to series page
+              </button>
               {nextChapter && (
                 <button
                   className="btn-primary"
@@ -494,17 +513,19 @@ export default function ReaderPage({ mangaId, chapterId }) {
           {/* Actual manga pages */}
           {!isLoadingPages && pages.length > 0 && pages.map((p) => (
             <div key={p.page} className="manga-page-frame">
-              <img
+              <img referrerPolicy="no-referrer"
                 src={p.url}
                 alt={`${manga.title} - Ch. ${currentChapter.chapter} Page ${p.page}`}
                 className={`manga-page-img ${settings.greyscalePages ? "greyscale" : ""}`}
                 loading={settings.preloadMode === "all" || p.page <= 4 ? "eager" : "lazy"}
                 onError={(e) => {
-                  // Try fallback URL (full quality if data-saver failed, or vice versa)
-                  if (p.fallbackUrl && e.target.src !== p.fallbackUrl) {
-                    e.target.src = p.fallbackUrl;
-                  } else if (p.dataSaverUrl && e.target.src !== p.dataSaverUrl) {
-                    e.target.src = p.dataSaverUrl;
+                  // Walk through the candidate URLs: data-saver -> full quality -> via our proxy
+                  const img = e.currentTarget;
+                  const next = Number(img.dataset.attempt || 0) + 1;
+                  const list = p.candidates || [];
+                  if (next < list.length) {
+                    img.dataset.attempt = String(next);
+                    img.src = list[next];
                   }
                 }}
               />

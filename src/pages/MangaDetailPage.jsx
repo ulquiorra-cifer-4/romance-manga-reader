@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useRomance } from "../context/RomanceContext";
 import { ROMANCE_DATABASE, GET_MANGA_BY_ID } from "../data/romanceMangaDatabase";
-import { fetchChapters, fetchMangaCover } from "../services/mangadexApi";
+import { fetchChapters, fetchExternalChapters, fetchMangaCover, onCoverError, ensureMangaDexId } from "../services/mangadexApi";
 
 export default function MangaDetailPage({ mangaId }) {
   const {
@@ -47,35 +47,45 @@ export default function MangaDetailPage({ mangaId }) {
   const [liveChapters, setLiveChapters] = useState([]);
   const [isLoadingChapters, setIsLoadingChapters] = useState(false);
   const [chapterError, setChapterError] = useState(null);
+  const [externalChapters, setExternalChapters] = useState([]);
   // LIVE cover loading
   const [liveCover, setLiveCover] = useState(manga.cover);
 
-  // Fetch chapters from MangaDex on mount
+  // Fetch chapters from MangaDex on mount (looking up the MangaDex id first if needed)
   useEffect(() => {
-    const mangadexId = manga.mangadexId;
-    if (!mangadexId) return;
-
-    setIsLoadingChapters(true);
+    let cancelled = false;
+    setLiveChapters([]);
+    setExternalChapters([]);
     setChapterError(null);
+    setIsLoadingChapters(true);
 
-    fetchChapters(mangadexId)
-      .then((chapters) => {
-        setLiveChapters(chapters);
+    (async () => {
+      const mangadexId = await ensureMangaDexId(manga);
+      if (cancelled) return;
+      if (!mangadexId) {
         setIsLoadingChapters(false);
-      })
-      .catch((err) => {
+        return;
+      }
+      try {
+        const chapters = await fetchChapters(mangadexId);
+        if (!cancelled) setLiveChapters(chapters);
+      } catch (err) {
         console.warn("Failed to load chapters:", err);
-        setChapterError("Could not load chapters from MangaDex. Please try again.");
-        setIsLoadingChapters(false);
-      });
+        if (!cancelled) setChapterError(`Could not load chapters from MangaDex (${err?.message || "network error"}). Please try again.`);
+      }
+      if (!cancelled) setIsLoadingChapters(false);
+      fetchExternalChapters(mangadexId)
+        .then((ext) => !cancelled && setExternalChapters(ext))
+        .catch(() => {});
+      if (!manga.cover) {
+        fetchMangaCover(mangadexId).then((url) => !cancelled && url && setLiveCover(url));
+      }
+    })();
 
-    // Also fetch cover if not already set
-    if (!manga.cover) {
-      fetchMangaCover(mangadexId).then((url) => {
-        if (url) setLiveCover(url);
-      });
-    }
-  }, [manga.mangadexId, manga.cover]);
+    return () => {
+      cancelled = true;
+    };
+  }, [manga.id, manga.cover]);
 
   const isFav = favorites.includes(manga.id);
   const currentLibraryStatus = library[manga.id]?.status || null;
@@ -144,7 +154,7 @@ export default function MangaDetailPage({ mangaId }) {
       <div className="detail-layout">
         {/* LEFT COLUMN: Cover, Star Rating, Share */}
         <div className="detail-left-col">
-          <img src={coverUrl} alt={manga.title} className="detail-cover" />
+          <img referrerPolicy="no-referrer" src={coverUrl} alt={manga.title} className="detail-cover" onError={onCoverError} />
 
           {/* Star Rating Widget */}
           <div
@@ -222,18 +232,32 @@ export default function MangaDetailPage({ mangaId }) {
 
           {/* Action Buttons */}
           <div className="detail-actions" style={{ position: "relative" }}>
-            <button
-              className="btn-primary"
-              onClick={() => {
-                const targetCh = activeChapters.length > 0
-                  ? activeChapters[activeChapters.length - 1]?.id  // First chapter (sorted desc, so last = earliest)
-                  : `${manga.id}-1`;
-                navigateTo("reader", { mangaId: manga.id, chapterId: targetCh });
-              }}
-            >
-              <BookOpen size={18} />
-              <span>Start reading</span>
-            </button>
+            {activeChapters.length === 0 && !isLoadingChapters && (externalChapters.length > 0 || manga.officialLinks?.length > 0) ? (
+              <a
+                className="btn-primary"
+                href={externalChapters.length > 0 ? externalChapters[externalChapters.length - 1].url : manga.officialLinks[0].url}
+                target="_blank"
+                rel="noreferrer"
+                style={{ textDecoration: "none" }}
+              >
+                <ExternalLink size={18} />
+                <span>Read on official site</span>
+              </a>
+            ) : (
+              <button
+                className="btn-primary"
+                disabled={isLoadingChapters && activeChapters.length === 0}
+                onClick={() => {
+                  if (activeChapters.length === 0) return;
+                  // List is sorted newest-first, so the last entry is chapter 1
+                  const first = activeChapters[activeChapters.length - 1];
+                  navigateTo("reader", { mangaId: manga.id, chapterId: first.id });
+                }}
+              >
+                <BookOpen size={18} />
+                <span>Start reading</span>
+              </button>
+            )}
 
             {/* Follow Dropdown */}
             <div style={{ position: "relative" }}>
@@ -323,6 +347,27 @@ export default function MangaDetailPage({ mangaId }) {
               </button>
             </p>
           </div>
+
+          {/* Official, legal places to read this series */}
+          {manga.officialLinks?.length > 0 && (
+            <div style={{ marginTop: "1rem" }}>
+              <div className="meta-group-title">READ OFFICIALLY</div>
+              <div className="meta-tags-list">
+                {manga.officialLinks.slice(0, 6).map((l) => (
+                  <a
+                    key={l.url}
+                    href={l.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="meta-pill"
+                    style={{ textDecoration: "none", color: "#22d3ee", borderColor: "#22d3ee" }}
+                  >
+                    {l.site} ↗
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* RIGHT COLUMN: Genres, Tags, Demographics, Trackers */}
@@ -489,6 +534,33 @@ export default function MangaDetailPage({ mangaId }) {
           </div>
         </div>
 
+        {externalChapters.length > 0 && (
+          <div
+            style={{
+              margin: "0 0 1rem",
+              padding: "0.8rem 1rem",
+              border: "1px solid #28313e",
+              borderRadius: 10,
+              background: "rgba(34, 211, 238, 0.06)",
+              color: "#cbd5e1",
+              fontSize: "0.85rem",
+              lineHeight: 1.5,
+            }}
+          >
+            <strong style={{ color: "#22d3ee" }}>{externalChapters.length} chapters</strong>{" "}
+            (Ch. {externalChapters[externalChapters.length - 1].chapter}–{externalChapters[0].chapter})
+            are officially licensed and not hosted on MangaDex, so they can't be read here.{" "}
+            <a
+              href={externalChapters[0].url}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#22d3ee", textDecoration: "underline" }}
+            >
+              Read the latest on the official site
+            </a>
+          </div>
+        )}
+
         {/* Chapters List matching Screenshot 4 */}
         <div className="chapters-list">
           {isLoadingChapters ? (
@@ -548,10 +620,44 @@ export default function MangaDetailPage({ mangaId }) {
             <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
               {chapterSearch
                 ? `No chapters found matching "${chapterSearch}".`
+                : chapterError
+                ? "Chapters could not be loaded right now. Refresh the page to try again."
+                : externalChapters.length > 0 || manga.officialLinks?.length > 0
+                ? "MangaDex doesn't host readable chapters for this series (it's officially licensed). Use the \"Read officially\" links above."
                 : "No readable chapters available on MangaDex for this title."}
             </div>
           )}
         </div>
+
+        {/* Licensed chapters: open on the official site */}
+        {!isLoadingChapters && !chapterSearch && externalChapters.length > 0 && (
+          <div className="chapters-list" style={{ marginTop: "1rem" }}>
+            {externalChapters.slice(0, 15).map((ch) => (
+              <a
+                key={ch.id}
+                href={ch.url}
+                target="_blank"
+                rel="noreferrer"
+                className="chapter-row"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <div className="chapter-row-left">
+                  <span className="chapter-num">Ch.{ch.chapter}</span>
+                  {ch.title && <span className="chapter-title-text">{ch.title}</span>}
+                </div>
+                <div className="chapter-row-right">
+                  <div className="chapter-group">
+                    <ExternalLink size={13} color="#f59e0b" />
+                    <span>Official site</span>
+                  </div>
+                  <div className="chapter-time">
+                    <span>{ch.timeAgo}</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

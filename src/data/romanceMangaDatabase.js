@@ -202,13 +202,13 @@ export const ROMANCE_DATABASE = [
   },
   {
     id: "dangers-in-my-heart",
-    mangadexId: "6274fcab-df09-4ac5-b516-14152bd031c7",
+    mangadexId: "3df1a9a3-a1be-47a3-9e90-9b3e55b1d0ac",
     title: "The Dangers in My Heart",
     romajiTitle: "Boku no Kokoro no Yabai Yatsu",
     kanjiTitle: "僕の心のヤバイやつ",
     storyAndArt: "Sakurai Norio",
-    cover: "https://uploads.mangadex.org/covers/6274fcab-df09-4ac5-b516-14152bd031c7/8768d08a-dc48-48a6-8da8-705f94fac522.jpg.512.jpg",
-    banner: "https://uploads.mangadex.org/covers/6274fcab-df09-4ac5-b516-14152bd031c7/8768d08a-dc48-48a6-8da8-705f94fac522.jpg",
+    cover: "https://uploads.mangadex.org/covers/3df1a9a3-a1be-47a3-9e90-9b3e55b1d0ac/31d68c5a-3935-4d24-8712-786ea04ead34.jpg.512.jpg",
+    banner: "https://uploads.mangadex.org/covers/3df1a9a3-a1be-47a3-9e90-9b3e55b1d0ac/31d68c5a-3935-4d24-8712-786ea04ead34.jpg",
     year: 2018,
     status: "ONGOING",
     type: "MANGA",
@@ -233,7 +233,7 @@ export const ROMANCE_DATABASE = [
     trackers: {
       anilist: "https://anilist.co/manga/101583/Boku-no-Kokoro-no-Yabai-Yatsu/",
       mal: "https://myanimelist.net/manga/112807/Boku_no_Kokoro_no_Yabai_Yatsu",
-      mangadex: "https://mangadex.org/title/6274fcab-df09-4ac5-b516-14152bd031c7"
+      mangadex: "https://mangadex.org/title/3df1a9a3-a1be-47a3-9e90-9b3e55b1d0ac"
     },
     synopsis: "Kyoutarou Ichikawa hides behind a facade of edgy, murderous fantasies, particularly targeting his class's resident model and beauty, Anna Yamada. But in the quiet sanctuary of the school library, he discovers Anna is an awkward, carefree sweets fanatic. As they spend quiet afternoons together, his dark thoughts dissolve into tender, innocent first love.",
     highlights: "Masterclass slow-burn romance with unmatched psychological character growth and heart-melting romantic moments.",
@@ -470,7 +470,7 @@ export function GET_MANGA_BY_ID(id) {
   }
 
   // 3. If it looks like a MangaDex UUID, create a placeholder object that can be enriched
-  const cleanId = id.replace(/^md-/, "");
+  const cleanId = /^al-/.test(id) ? null : id.replace(/^md-/, "");
   return {
     id: id,
     mangadexId: cleanId,
@@ -484,4 +484,28 @@ export function GET_MANGA_BY_ID(id) {
     synopsis: "Fetching details from MangaDex...",
     chapters: []
   };
+}
+
+/**
+ * Refresh curated entries (covers, banners, official links) from AniList so thumbnails
+ * keep working even if MangaDex or the proxy is down. Mutates in place; returns true
+ * if anything changed.
+ */
+export async function hydrateCuratedFromAniList(lookup) {
+  try {
+    const results = await lookup(ROMANCE_DATABASE.map((m) => m.romajiTitle || m.title));
+    let changed = false;
+    results.forEach((r, i) => {
+      if (!r) return;
+      const m = ROMANCE_DATABASE[i];
+      if (r.cover && (!m.cover || m.cover.includes("placeholder"))) { m.cover = r.cover; changed = true; }
+      if (r.banner && !m.banner) m.banner = r.banner;
+      m.officialLinks = r.officialLinks;
+      m.anilistId = r.anilistId;
+    });
+    return changed;
+  } catch (err) {
+    console.warn("AniList hydration error:", err);
+    return false;
+  }
 }

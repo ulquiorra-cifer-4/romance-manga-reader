@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Heart, Search, BookOpen, Settings, Moon, Compass, Bookmark, X, Sparkles, Loader } from "lucide-react";
 import { useRomance } from "../context/RomanceContext";
+import { onCoverError } from "../services/mangadexApi";
 import { ROMANCE_DATABASE } from "../data/romanceMangaDatabase";
 import { searchMangaDex } from "../services/mangadexApi";
+import { searchAniList } from "../services/anilistApi";
 import { REGISTER_DYNAMIC_MANGA } from "../data/romanceMangaDatabase";
 
 export default function Header() {
@@ -55,11 +57,12 @@ export default function Header() {
 
     setIsSearching(true);
     debounceRef.current = setTimeout(() => {
-      searchMangaDex(searchVal.trim(), 8)
+      searchAniList(searchVal.trim(), 8)
+        .catch(() => searchMangaDex(searchVal.trim(), 8))
         .then((results) => {
-          // Filter out any results already in local database
-          const localIds = new Set(ROMANCE_DATABASE.map(m => m.mangadexId));
-          const newResults = results.filter(r => !localIds.has(r.mangadexId));
+          // Filter out titles already in the curated database
+          const localTitles = new Set(ROMANCE_DATABASE.map(m => (m.romajiTitle || m.title).toLowerCase()));
+          const newResults = results.filter(r => !localTitles.has((r.romajiTitle || r.title).toLowerCase()));
           // Register these in dynamic registry so they can be navigated to
           newResults.forEach(r => REGISTER_DYNAMIC_MANGA(r));
           setLiveResults(newResults);
@@ -173,7 +176,7 @@ export default function Header() {
                   navigateTo("manga", { mangaId: manga.id });
                 }}
               >
-                <img src={manga.cover} alt={manga.title} className="search-result-thumb" />
+                <img referrerPolicy="no-referrer" src={manga.cover} alt={manga.title} className="search-result-thumb" onError={onCoverError} />
                 <div className="search-result-info">
                   <div className="search-result-title">{manga.title}</div>
                   <div className="search-result-meta">
@@ -210,7 +213,7 @@ export default function Header() {
                   navigateTo("manga", { mangaId: manga.id });
                 }}
               >
-                <img src={manga.cover} alt={manga.title} className="search-result-thumb" />
+                <img referrerPolicy="no-referrer" src={manga.cover} alt={manga.title} className="search-result-thumb" onError={onCoverError} />
                 <div className="search-result-info">
                   <div className="search-result-title">{manga.title}</div>
                   <div className="search-result-meta">

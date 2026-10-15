@@ -1,6 +1,7 @@
 import React from "react";
 import { Star, Heart } from "lucide-react";
 import { useRomance } from "../context/RomanceContext";
+import { onCoverError } from "../services/mangadexApi";
 
 export default function MangaCard({ manga }) {
   const { navigateTo, favorites, toggleFavorite } = useRomance();
@@ -13,16 +14,38 @@ export default function MangaCard({ manga }) {
       onClick={() => navigateTo("manga", { mangaId: manga.id })}
     >
       <div className="card-cover-wrapper">
-        <img
+        <img referrerPolicy="no-referrer"
           src={manga.cover}
           alt={manga.title}
           className="card-cover-img"
           loading="lazy"
+          onError={onCoverError}
         />
         <div className="card-rating-badge">
           <Star size={12} fill="#facc15" />
           <span>{manga.rating}</span>
         </div>
+        {manga.readable === false && (
+          <div
+            title="Officially licensed: not readable on MangaDex. Opens with official links."
+            style={{
+              position: "absolute", bottom: 8, left: 8, padding: "2px 8px", borderRadius: 6,
+              fontSize: "0.68rem", fontWeight: 700, background: "rgba(245,158,11,0.9)", color: "#1a1e25",
+            }}
+          >
+            OFFICIAL SITE ONLY
+          </div>
+        )}
+        {manga.readable === true && (
+          <div
+            style={{
+              position: "absolute", bottom: 8, left: 8, padding: "2px 8px", borderRadius: 6,
+              fontSize: "0.68rem", fontWeight: 700, background: "rgba(34,211,238,0.9)", color: "#0b1118",
+            }}
+          >
+            READ HERE
+          </div>
+        )}
         <div className="card-ch-badge">
           <span>Ch. {manga.latestChapter || manga.chapters?.length || "NEW"}</span>
         </div>

@@ -1,13 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BookOpen, Star, Flame, Sparkles, Heart, ChevronRight, Play, Compass, Clock, Award } from "lucide-react";
 import { useRomance } from "../context/RomanceContext";
-import { ROMANCE_DATABASE, ROMANCE_GENRES } from "../data/romanceMangaDatabase";
+import { onCoverError, fetchReadableRomance } from "../services/mangadexApi";
+import { ROMANCE_DATABASE, ROMANCE_GENRES, REGISTER_DYNAMIC_MANGA } from "../data/romanceMangaDatabase";
 import MangaCard from "../components/MangaCard";
 
 export default function HomePage() {
   const { navigateTo, history, favorites } = useRomance();
   const [selectedGenre, setSelectedGenre] = useState("All Romance");
   const [heroIndex, setHeroIndex] = useState(0);
+
+  // Titles verified to have readable English chapters on MangaDex
+  const [readableNow, setReadableNow] = useState([]);
+  const [readableLoading, setReadableLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    fetchReadableRomance({
+      target: 18,
+      onFound: (list) => {
+        list.forEach((m) => REGISTER_DYNAMIC_MANGA(m));
+        if (!cancelled) setReadableNow(list);
+      },
+    })
+      .catch((e) => console.warn("Readable catalog failed:", e))
+      .finally(() => !cancelled && setReadableLoading(false));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Spotlight featured mangas
   const featuredMangas = ROMANCE_DATABASE.filter((m) => m.featured);
@@ -35,8 +55,8 @@ export default function HomePage() {
       >
         <div className="hero-overlay" />
         <div className="hero-content">
-          <img
-            src={currentHero.cover}
+          <img referrerPolicy="no-referrer"
+            src={currentHero.cover} onError={onCoverError}
             alt={currentHero.title}
             className="hero-cover"
             onClick={() => navigateTo("manga", { mangaId: currentHero.id })}
@@ -108,6 +128,30 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Verified readable titles */}
+      <section className="manga-section">
+        <div className="section-header">
+          <div className="section-title-wrap">
+            <BookOpen size={22} className="section-title-icon" color="#22d3ee" />
+            <h2 className="section-title">Read Now (Free on MangaDex)</h2>
+            <span className="section-subtitle">
+              {readableLoading ? "Checking which series have readable chapters..." : `${readableNow.length} verified series`}
+            </span>
+          </div>
+        </div>
+        {readableNow.length > 0 ? (
+          <div className="manga-grid">
+            {readableNow.map((m) => (
+              <MangaCard key={m.id} manga={m} />
+            ))}
+          </div>
+        ) : !readableLoading ? (
+          <div style={{ padding: "1.5rem", color: "#94a3b8" }}>
+            Couldn't load readable titles right now. Refresh to try again.
+          </div>
+        ) : null}
+      </section>
+
       {/* Romance Category Filter Bar */}
       <div className="category-filter-bar">
         {ROMANCE_GENRES.map((g) => (
@@ -161,8 +205,8 @@ export default function HomePage() {
                   }}
                   onClick={() => navigateTo("reader", { mangaId: item.mangaId, chapterId: item.chapterId })}
                 >
-                  <img
-                    src={manga.cover}
+                  <img referrerPolicy="no-referrer"
+                    src={manga.cover} onError={onCoverError}
                     alt={item.mangaTitle}
                     style={{ width: 56, height: 78, objectFit: "cover", borderRadius: "6px" }}
                   />
